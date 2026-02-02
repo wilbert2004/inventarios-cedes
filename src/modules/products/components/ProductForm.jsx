@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 
 /**
- * Componente de formulario para productos en resguardo
- * Estructura en 3 secciones: Datos Generales, Productos, Datos de Entrega
+ * Componente de formulario para bienes en custodia
+ * Estructura en 3 secciones: Datos Generales, Bienes, Datos de Entrega
  */
 export const ProductForm = ({ product = null, onSubmit, onCancel, isSubmitting = false }) => {
     const { user } = useAuth();
@@ -463,16 +463,12 @@ export const ProductForm = ({ product = null, onSubmit, onCancel, isSubmitting =
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                         Motivo <span className="text-red-500">*</span>
                                     </label>
-                                    <select
-                                        value={product.reason}
-                                        onChange={(e) => handleProductChange(product.id, 'reason', e.target.value)}
-                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        required
-                                    >
-                                        <option value="BAJA">Baja</option>
-                                        <option value="RESGUARDO">Resguardo</option>
-                                        <option value="TRASLADO">Traslado</option>
-                                    </select>
+                                    <input
+                                        type="text"
+                                        value="Resguardo"
+                                        disabled
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed"
+                                    />
                                 </div>
 
                                 {/* Notas */}
@@ -535,35 +531,6 @@ export const ProductForm = ({ product = null, onSubmit, onCancel, isSubmitting =
                             type="date"
                             name="fecha_recepcion_chofer"
                             value={deliveryData.fecha_recepcion_chofer}
-                            onChange={handleDeliveryChange}
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        />
-                    </div>
-
-                    {/* Recibido por Almacén */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Recibido por (Almacén)
-                        </label>
-                        <input
-                            type="text"
-                            name="recibido_por_almacen"
-                            value={deliveryData.recibido_por_almacen}
-                            onChange={handleDeliveryChange}
-                            placeholder="Nombre del almacenista (En dado caso)"
-                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        />
-                    </div>
-
-                    {/* Fecha Recepción Almacén */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Fecha Recepción (Almacén)
-                        </label>
-                        <input
-                            type="date"
-                            name="fecha_recepcion_almacen"
-                            value={deliveryData.fecha_recepcion_almacen}
                             onChange={handleDeliveryChange}
                             className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />

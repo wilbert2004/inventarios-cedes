@@ -218,13 +218,13 @@ export default function ProfileView() {
                 <div className="flex items-center justify-center w-24 h-24 mx-auto mb-4 font-semibold text-white rounded-full bg-gradient-to-br from-blue-600 to-blue-700">
                   {user.name?.charAt(0).toUpperCase() || 'U'}
                 </div>
-                
+
                 {/* Nombre */}
                 <h2 className="mb-2 text-xl font-bold text-gray-900 dark:text-white">{user.name}</h2>
-                
+
                 {/* Rol */}
                 <div className="inline-flex items-center px-3 py-1 mb-4 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:text-blue-300 dark:bg-blue-900/30">
-                  {user.role === 'admin' ? 'Administrador' : 'Cajero'}
+                  {user.role === 'admin' ? 'Administrador' : 'Usuario Regular'}
                 </div>
 
                 {/* Información adicional */}
@@ -233,7 +233,7 @@ export default function ProfileView() {
                     <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Usuario</p>
                     <p className="text-sm text-gray-900 dark:text-white">{user.username}</p>
                   </div>
-                  
+
                   {user.created_at && (
                     <div className="text-left">
                       <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Miembro desde</p>
@@ -283,9 +283,8 @@ export default function ProfileView() {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border rounded-lg outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.name ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
-                  }`}
+                  className={`w-full px-4 py-2 border rounded-lg outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.name ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
+                    }`}
                   placeholder="Tu nombre completo"
                 />
                 {errors.name && (
@@ -307,9 +306,8 @@ export default function ProfileView() {
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 border rounded-lg outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.username ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
-                  }`}
+                  className={`w-full px-4 py-2 border rounded-lg outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.username ? 'border-red-300 dark:border-red-600' : 'border-gray-300 dark:border-gray-600'
+                    }`}
                   placeholder="nombre_usuario"
                 />
                 {errors.username && (
@@ -327,7 +325,7 @@ export default function ProfileView() {
                 </label>
                 <div className="flex items-center gap-3 px-4 py-2 border border-gray-300 rounded-lg dark:border-gray-600 bg-gray-50 dark:bg-gray-700">
                   <span className="text-gray-700 dark:text-gray-300">
-                    {user.role === 'admin' ? 'Administrador' : 'Cajero'}
+                    {user.role === 'admin' ? 'Administrador' : 'Usuario Regular'}
                   </span>
                   <span className="text-xs text-gray-500 dark:text-gray-400">
                     (No se puede cambiar desde el perfil)

@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from 'react';
 
 /**
- * Componente de búsqueda de productos para salida
+ * Componente de búsqueda de bienes para salida
  * Permite buscar por código de barras o nombre
  */
 export function ExitProductSearch({ products, onSelectProduct, isLoading = false }) {

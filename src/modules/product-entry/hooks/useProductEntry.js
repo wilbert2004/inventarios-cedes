@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 /**
- * Custom hook para manejar la lógica de entrada de productos
+ * Custom hook para manejar la lógica de entrada de bienes
  */
 export const useProductEntry = () => {
   const [products, setProducts] = useState([]);

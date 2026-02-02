@@ -40,7 +40,7 @@ export function ReportChart({ data, reportType, loading }) {
                                 Transacciones
                             </th>
                             <th className="px-4 py-2 font-semibold text-right text-gray-700 dark:text-gray-300">
-                                Total Ventas
+                                Total Movimientos
                             </th>
                             <th className="px-4 py-2 font-semibold text-right text-gray-700 dark:text-gray-300">
                                 Promedio

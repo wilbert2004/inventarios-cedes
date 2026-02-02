@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 /**
- * Custom hook para manejar la lógica de productos en resguardo (CEDES)
+ * Custom hook para manejar la lógica de bienes en custodia (CEDES)
  */
 export const useCustodyProducts = () => {
     const [products, setProducts] = useState([]);

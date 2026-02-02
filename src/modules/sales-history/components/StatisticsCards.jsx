@@ -33,7 +33,7 @@ export const StatisticsCards = ({ statistics }) => {
   return (
     <div className="grid grid-cols-1 gap-4 mb-6 md:grid-cols-2 lg:grid-cols-4">
       <StatCard
-        title="Total de Ventas"
+        title="Total de Movimientos"
         value={statistics.totalSales}
         color="blue"
         icon={
@@ -49,7 +49,7 @@ export const StatisticsCards = ({ statistics }) => {
       />
 
       <StatCard
-        title="Ingresos Totales"
+        title="Valor Total"
         value={`$${statistics.totalRevenue.toFixed(2)}`}
         color="green"
         icon={
@@ -65,7 +65,7 @@ export const StatisticsCards = ({ statistics }) => {
       />
 
       <StatCard
-        title="Artículos Vendidos"
+        title="Bienes Movidos"
         value={statistics.totalItems}
         color="purple"
         icon={
@@ -81,7 +81,7 @@ export const StatisticsCards = ({ statistics }) => {
       />
 
       <StatCard
-        title="Ticket Promedio"
+        title="Promedio por Movimiento"
         value={`$${statistics.averageTicket.toFixed(2)}`}
         color="orange"
         icon={

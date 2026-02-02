@@ -1,6 +1,6 @@
-# Módulo de Salida de Inventario
+# Módulo de Salida de Bienes
 
-MVP (Mínimo Producto Viable) para registrar la salida/extracción de mercancía y actualizar automáticamente el stock.
+MVP (Mínimo Producto Viable) para registrar la salida/extracción de bienes y actualizar automáticamente el inventario.
 
 ## 📁 Estructura del Módulo
 
@@ -23,26 +23,26 @@ inventory-exit/
 
 1. **Formulario de Salida**
    - **Folio** (requerido, único)
-   - **Motivo** (requerido, dropdown con: VENTA, DEVOLUCIÓN, ROTURA, PÉRDIDA, TRANSFERENCIA, DONACIÓN, BAJA, OTRO)
+   - **Motivo** (requerido, dropdown con: TRASLADO, DEVOLUCIÓN, ROTURA, PÉRDIDA, TRANSFERENCIA, DONACIÓN, BAJA, OTRO)
    - **Fecha** (requerido, date picker)
    - **Descripción** (opcional)
    - Validación en tiempo real con mensajes de error
 
-2. **Búsqueda de Productos**
+2. **Búsqueda de Bienes**
    - Busca por código de barras o nombre
-   - Solo muestra productos con stock disponible
-   - Dropdown interactivo con cantidad y precio
+   - Solo muestra bienes con disponibilidad
+   - Dropdown interactivo con cantidad y valor
    - Selección rápida
 
 3. **Carrito de Salida**
-   - Múltiples productos
-   - Control de cantidad con validación (no puede exceder stock)
+   - Múltiples bienes
+   - Control de cantidad con validación (no puede exceder disponibilidad)
    - Muestra:
-     - Stock actual
+     - Disponibilidad actual
      - Cantidad a extraer
-     - Stock después de la salida
-     - Valor del producto
-   - Eliminar productos del carrito
+     - Disponibilidad después de la salida
+     - Valor del bien
+   - Eliminar bienes del carrito
    - Expandible/colapsable para vista rápida
    - Resumen rápido de totales
 

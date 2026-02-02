@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 /**
- * Custom hook para manejar la lógica del historial de ventas
+ * Custom hook para manejar la lógica del historial de movimientos
  */
 export const useSalesHistory = () => {
   const [sales, setSales] = useState([]);

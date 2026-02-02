@@ -6,7 +6,7 @@ import { EntriesTable } from './components/EntriesTable';
 import { EntryDetailModal } from './components/EntryDetailModal';
 
 /**
- * Vista principal del historial de entradas de productos
+ * Vista principal del historial de entradas de bienes
  */
 export default function EntryHistoryView() {
   const {
@@ -30,9 +30,9 @@ export default function EntryHistoryView() {
       <div className="max-w-full mx-auto">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Historial de Entradas</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Historial de Entradas de Bienes</h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">
-            Consulta y administra todas las entradas de productos registradas
+            Consulta y administra todas las entradas de bienes registradas
           </p>
         </div>
 

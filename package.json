@@ -1,8 +1,8 @@
 {
-  "name": "absolute-pos-app",
-  "productName": "absolute-pos-app",
+  "name": "absolute-bienes-app",
+  "productName": "Absolute Gestión de Bienes",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "Sistema de control, resguardo y trazabilidad de bienes",
   "main": ".vite/main/main.js",
   "scripts": {
     "start": "electron-forge start",

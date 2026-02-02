@@ -16,6 +16,10 @@ export default function ControlGeneralView() {
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [showDetail, setShowDetail] = useState(false);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isDownloading, setIsDownloading] = useState(false);
+    const [lastPdfPath, setLastPdfPath] = useState(null);
 
     // Cargar TODOS los productos (incluidos dados de baja)
     const loadAllProducts = async () => {
@@ -75,6 +79,97 @@ export default function ControlGeneralView() {
         });
     };
 
+    const showNotification = (message, type = 'success') => {
+        if (type === 'success') {
+            setSuccessMessage(message);
+            setTimeout(() => {
+                setSuccessMessage('');
+                setLastPdfPath(null);
+            }, 6000);
+        } else {
+            setErrorMessage(message);
+            setTimeout(() => setErrorMessage(''), 4000);
+        }
+    };
+
+    const handleOpenPDF = async () => {
+        if (!lastPdfPath) return;
+
+        try {
+            await window.api.shell.openPath(lastPdfPath);
+        } catch (error) {
+            console.error('Error abriendo PDF:', error);
+        }
+    };
+
+    const handleDownloadPDF = async () => {
+        if (!selectedProduct) {
+            console.log('No hay producto seleccionado');
+            return;
+        }
+
+        console.log('Iniciando descarga de PDF para:', selectedProduct.inventory_number);
+        setIsDownloading(true);
+
+        try {
+            // Preparar los datos del producto para el PDF
+            const productData = {
+                inventory_number: selectedProduct.inventory_number,
+                serial_number: selectedProduct.serial_number || 'N/A',
+                description: selectedProduct.description,
+                brand: selectedProduct.brand || 'N/A',
+                model: selectedProduct.model || 'N/A',
+                quantity: selectedProduct.quantity,
+                reason: selectedProduct.reason,
+                product_status: selectedProduct.product_status,
+                center_origin: selectedProduct.center_origin,
+                reference_folio: selectedProduct.reference_folio || 'N/A',
+                entregado_por_centro_trabajo: selectedProduct.entregado_por_centro_trabajo || 'N/A',
+                fecha_entrega: selectedProduct.fecha_entrega,
+                recibido_por_chofer: selectedProduct.recibido_por_chofer || 'N/A',
+                fecha_recepcion_chofer: selectedProduct.fecha_recepcion_chofer,
+                recibido_por_almacen: selectedProduct.recibido_por_almacen || 'N/A',
+                fecha_recepcion_almacen: selectedProduct.fecha_recepcion_almacen,
+                notes: selectedProduct.notes || 'Sin notas',
+                created_at: selectedProduct.created_at,
+                fecha_baja: selectedProduct.fecha_baja
+            };
+
+            console.log('Llamando a window.api.reports.generatePDF...');
+
+            // Verificar que la API existe
+            if (!window.api || !window.api.reports || !window.api.reports.generatePDF) {
+                throw new Error('La API de generación de PDF no está disponible');
+            }
+
+            const result = await window.api.reports.generatePDF(
+                { product: productData },
+                'custody-detail'
+            );
+
+            console.log('Resultado de generatePDF:', result);
+
+            // Si el usuario canceló el diálogo
+            if (!result) {
+                console.log('Usuario canceló la descarga');
+                showNotification('Descarga cancelada', 'error');
+                return;
+            }
+
+            if (result.success) {
+                setLastPdfPath(result.filePath);
+                showNotification('PDF generado con éxito');
+            } else {
+                showNotification(result.error || 'Error al generar el PDF', 'error');
+            }
+        } catch (error) {
+            console.error('Error generating PDF:', error);
+            showNotification(`Error al descargar el PDF: ${error.message}`, 'error');
+        } finally {
+            setIsDownloading(false);
+        }
+    };
+
     return (
         <div className="w-full min-h-screen p-6 bg-gray-50 dark:bg-gray-900">
             <div className="max-w-full mx-auto">
@@ -83,10 +178,10 @@ export default function ControlGeneralView() {
                     <div className="flex items-center justify-between">
                         <div>
                             <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                                📚 Control General - Relación Histórica
+                                � Control General - Trazabilidad de Bienes
                             </h1>
                             <p className="mt-2 text-gray-600 dark:text-gray-400">
-                                Registro completo de todos los productos • Solo consulta • Sin edición
+                                Registro completo de todos los bienes • Solo consulta • Sin edición
                             </p>
                         </div>
                         <button
@@ -114,11 +209,46 @@ export default function ControlGeneralView() {
                             <p className="text-sm text-blue-800 dark:text-blue-400 mt-1">
                                 Esta vista replica un libro físico de control usado para auditoría.
                                 Los registros no pueden ser editados ni eliminados desde aquí.
-                                Para modificar productos, use el módulo de Productos.
+                                Para modificar bienes, use el módulo de Bienes en Custodia.
                             </p>
                         </div>
                     </div>
                 </div>
+
+                {/* Notificaciones */}
+                {successMessage && (
+                    <div className="mb-4 p-4 bg-green-50 dark:bg-green-900/30 border border-green-500 dark:border-green-700 rounded-lg animate-fadeIn">
+                        <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-3">
+                                <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                </svg>
+                                <p className="font-medium text-green-700 dark:text-green-300">{successMessage}</p>
+                            </div>
+                            {lastPdfPath && (
+                                <button
+                                    onClick={handleOpenPDF}
+                                    className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition"
+                                >
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    Ver detalles
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )}
+
+                {errorMessage && (
+                    <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/30 border border-red-500 dark:border-red-700 rounded-lg flex items-center gap-3 animate-fadeIn">
+                        <svg className="w-5 h-5 text-red-600 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                        </svg>
+                        <p className="font-medium text-red-700 dark:text-red-300">{errorMessage}</p>
+                    </div>
+                )}
 
                 {/* Error */}
                 {error && (
@@ -358,10 +488,10 @@ export default function ControlGeneralView() {
                 {/* Modal de detalles */}
                 {showDetail && selectedProduct && (
                     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-screen overflow-y-auto">
-                            <div className="p-6">
-                                <div className="flex items-center justify-between mb-4">
-                                    <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+                        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+                            <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 z-10">
+                                <div className="flex items-center justify-between">
+                                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                                         Detalles del Producto
                                     </h2>
                                     <button
@@ -369,130 +499,221 @@ export default function ControlGeneralView() {
                                             setShowDetail(false);
                                             setSelectedProduct(null);
                                         }}
-                                        className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                                        className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition"
                                     >
                                         <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                         </svg>
                                     </button>
                                 </div>
+                            </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                                    <div>
-                                        <span className="text-gray-500 dark:text-gray-400">N° Inventario</span>
-                                        <p className="font-mono font-semibold text-gray-900 dark:text-white">
-                                            {selectedProduct.inventory_number}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <span className="text-gray-500 dark:text-gray-400">N° Serie</span>
-                                        <p className="font-mono text-gray-900 dark:text-white">
-                                            {selectedProduct.serial_number || '-'}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <span className="text-gray-500 dark:text-gray-400">Descripción</span>
-                                        <p className="text-gray-900 dark:text-white">
-                                            {selectedProduct.description || '-'}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <span className="text-gray-500 dark:text-gray-400">Centro de Trabajo</span>
-                                        <p className="text-gray-900 dark:text-white">
-                                            {selectedProduct.center_origin || '-'}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <span className="text-gray-500 dark:text-gray-400">Marca</span>
-                                        <p className="text-gray-900 dark:text-white">
-                                            {selectedProduct.brand || '-'}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <span className="text-gray-500 dark:text-gray-400">Modelo</span>
-                                        <p className="text-gray-900 dark:text-white">
-                                            {selectedProduct.model || '-'}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <span className="text-gray-500 dark:text-gray-400">Cantidad</span>
-                                        <p className="text-gray-900 dark:text-white">
-                                            {selectedProduct.quantity}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <span className="text-gray-500 dark:text-gray-400">Motivo</span>
-                                        <p className="text-gray-900 dark:text-white">
-                                            {selectedProduct.reason || '-'}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <span className="text-gray-500 dark:text-gray-400">Estado Actual</span>
-                                        <p className="text-gray-900 dark:text-white">
-                                            {selectedProduct.product_status}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <span className="text-gray-500 dark:text-gray-400">Folio</span>
-                                        <p className="text-gray-900 dark:text-white">
-                                            {selectedProduct.reference_folio || '-'}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <span className="text-gray-500 dark:text-gray-400">Entregado por (Centro)</span>
-                                        <p className="text-gray-900 dark:text-white">
-                                            {selectedProduct.entregado_por_centro_trabajo || '-'}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <span className="text-gray-500 dark:text-gray-400">Fecha de Entrega</span>
-                                        <p className="text-gray-900 dark:text-white">
-                                            {formatDate(selectedProduct.fecha_entrega)}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <span className="text-gray-500 dark:text-gray-400">Recibido por (Chofer)</span>
-                                        <p className="text-gray-900 dark:text-white">
-                                            {selectedProduct.recibido_por_chofer || '-'}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <span className="text-gray-500 dark:text-gray-400">Fecha Recepción (Chofer)</span>
-                                        <p className="text-gray-900 dark:text-white">
-                                            {formatDate(selectedProduct.fecha_recepcion_chofer)}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <span className="text-gray-500 dark:text-gray-400">Recibido por (Almacén)</span>
-                                        <p className="text-gray-900 dark:text-white">
-                                            {selectedProduct.recibido_por_almacen || '-'}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <span className="text-gray-500 dark:text-gray-400">Fecha Recepción (Almacén)</span>
-                                        <p className="text-gray-900 dark:text-white">
-                                            {formatDate(selectedProduct.fecha_recepcion_almacen)}
-                                        </p>
-                                    </div>
-                                    <div className="md:col-span-2">
-                                        <span className="text-gray-500 dark:text-gray-400">Notas</span>
-                                        <p className="text-gray-900 dark:text-white">
-                                            {selectedProduct.notes || '-'}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <span className="text-gray-500 dark:text-gray-400">Fecha Registro</span>
-                                        <p className="text-gray-900 dark:text-white">
-                                            {formatDate(selectedProduct.created_at)}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <span className="text-gray-500 dark:text-gray-400">Fecha Baja</span>
-                                        <p className="text-gray-900 dark:text-white">
-                                            {formatDate(selectedProduct.fecha_baja)}
-                                        </p>
+                            <div className="p-6 space-y-6">
+                                {/* Sección 1: Identificación del Producto */}
+                                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                                    <h3 className="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-3 uppercase tracking-wide">
+                                        📋 Identificación del Producto
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <span className="text-xs font-medium text-blue-700 dark:text-blue-400 block mb-1">N° Inventario</span>
+                                            <p className="font-mono font-bold text-gray-900 dark:text-white text-lg">
+                                                {selectedProduct.inventory_number}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <span className="text-xs font-medium text-blue-700 dark:text-blue-400 block mb-1">N° Serie</span>
+                                            <p className="font-mono text-gray-900 dark:text-white">
+                                                {selectedProduct.serial_number || '-'}
+                                            </p>
+                                        </div>
+                                        <div className="md:col-span-2">
+                                            <span className="text-xs font-medium text-blue-700 dark:text-blue-400 block mb-1">Descripción</span>
+                                            <p className="text-gray-900 dark:text-white">
+                                                {selectedProduct.description || '-'}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <span className="text-xs font-medium text-blue-700 dark:text-blue-400 block mb-1">Marca</span>
+                                            <p className="text-gray-900 dark:text-white">
+                                                {selectedProduct.brand || '-'}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <span className="text-xs font-medium text-blue-700 dark:text-blue-400 block mb-1">Modelo</span>
+                                            <p className="text-gray-900 dark:text-white">
+                                                {selectedProduct.model || '-'}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
+
+                                {/* Sección 2: Estado y Clasificación */}
+                                <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 border border-green-200 dark:border-green-800">
+                                    <h3 className="text-sm font-semibold text-green-900 dark:text-green-300 mb-3 uppercase tracking-wide">
+                                        ✅ Estado y Clasificación
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div>
+                                            <span className="text-xs font-medium text-green-700 dark:text-green-400 block mb-1">Estado Actual</span>
+                                            <p className="text-gray-900 dark:text-white font-semibold">
+                                                {selectedProduct.product_status}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <span className="text-xs font-medium text-green-700 dark:text-green-400 block mb-1">Motivo</span>
+                                            <p className="text-gray-900 dark:text-white">
+                                                {selectedProduct.reason || '-'}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <span className="text-xs font-medium text-green-700 dark:text-green-400 block mb-1">Cantidad</span>
+                                            <p className="text-gray-900 dark:text-white">
+                                                {selectedProduct.quantity}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Sección 3: Datos de Origen */}
+                                <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4 border border-purple-200 dark:border-purple-800">
+                                    <h3 className="text-sm font-semibold text-purple-900 dark:text-purple-300 mb-3 uppercase tracking-wide">
+                                        🏢 Datos de Origen
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="md:col-span-2">
+                                            <span className="text-xs font-medium text-purple-700 dark:text-purple-400 block mb-1">Centro de Trabajo</span>
+                                            <p className="text-gray-900 dark:text-white">
+                                                {selectedProduct.center_origin || '-'}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <span className="text-xs font-medium text-purple-700 dark:text-purple-400 block mb-1">Folio de Referencia</span>
+                                            <p className="text-gray-900 dark:text-white">
+                                                {selectedProduct.reference_folio || '-'}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <span className="text-xs font-medium text-purple-700 dark:text-purple-400 block mb-1">Entregado por</span>
+                                            <p className="text-gray-900 dark:text-white">
+                                                {selectedProduct.entregado_por_centro_trabajo || '-'}
+                                            </p>
+                                        </div>
+                                        <div className="md:col-span-2">
+                                            <span className="text-xs font-medium text-purple-700 dark:text-purple-400 block mb-1">Fecha de Entrega</span>
+                                            <p className="text-gray-900 dark:text-white">
+                                                {formatDate(selectedProduct.fecha_entrega)}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Sección 4: Datos de Recepción */}
+                                <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4 border border-orange-200 dark:border-orange-800">
+                                    <h3 className="text-sm font-semibold text-orange-900 dark:text-orange-300 mb-3 uppercase tracking-wide">
+                                        📦 Datos de Recepción
+                                    </h3>
+                                    <div className="space-y-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <span className="text-xs font-medium text-orange-700 dark:text-orange-400 block mb-1">Recibido por (Chofer)</span>
+                                                <p className="text-gray-900 dark:text-white">
+                                                    {selectedProduct.recibido_por_chofer || '-'}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <span className="text-xs font-medium text-orange-700 dark:text-orange-400 block mb-1">Fecha Recepción (Chofer)</span>
+                                                <p className="text-gray-900 dark:text-white">
+                                                    {formatDate(selectedProduct.fecha_recepcion_chofer)}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="border-t border-orange-200 dark:border-orange-700 pt-4">
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <span className="text-xs font-medium text-orange-700 dark:text-orange-400 block mb-1">Recibido por (Almacén)</span>
+                                                    <p className="text-gray-900 dark:text-white">
+                                                        {selectedProduct.recibido_por_almacen || '-'}
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <span className="text-xs font-medium text-orange-700 dark:text-orange-400 block mb-1">Fecha Recepción (Almacén)</span>
+                                                    <p className="text-gray-900 dark:text-white">
+                                                        {formatDate(selectedProduct.fecha_recepcion_almacen)}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Sección 5: Información Adicional */}
+                                <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
+                                    <h3 className="text-sm font-semibold text-gray-900 dark:text-gray-300 mb-3 uppercase tracking-wide">
+                                        📝 Información Adicional
+                                    </h3>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <span className="text-xs font-medium text-gray-700 dark:text-gray-400 block mb-1">Notas/Observaciones</span>
+                                            <p className="text-gray-900 dark:text-white bg-white dark:bg-gray-800 p-3 rounded border border-gray-200 dark:border-gray-600">
+                                                {selectedProduct.notes || 'Sin notas adicionales'}
+                                            </p>
+                                        </div>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <span className="text-xs font-medium text-gray-700 dark:text-gray-400 block mb-1">Fecha de Registro</span>
+                                                <p className="text-gray-900 dark:text-white">
+                                                    {formatDate(selectedProduct.created_at)}
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <span className="text-xs font-medium text-gray-700 dark:text-gray-400 block mb-1">Fecha de Baja</span>
+                                                <p className="text-gray-900 dark:text-white">
+                                                    {formatDate(selectedProduct.fecha_baja)}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Botones de Acción */}
+                            <div className="sticky bottom-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-6 flex gap-3">
+                                <button
+                                    onClick={() => {
+                                        setShowDetail(false);
+                                        setSelectedProduct(null);
+                                    }}
+                                    disabled={isDownloading}
+                                    className="flex-1 bg-gray-500 hover:bg-gray-600 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center gap-2"
+                                >
+                                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                    Cerrar
+                                </button>
+                                <button
+                                    onClick={handleDownloadPDF}
+                                    disabled={isDownloading}
+                                    className="flex-1 bg-red-600 hover:bg-red-700 disabled:bg-red-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-4 rounded-lg transition duration-200 flex items-center justify-center gap-2"
+                                >
+                                    {isDownloading ? (
+                                        <>
+                                            <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            Descargando...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                            Descargar PDF
+                                        </>
+                                    )}
+                                </button>
                             </div>
                         </div>
                     </div>

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 
 /**
- * Buscador de ventas específicas
- * Permite ingresar el ID de una venta y buscarla
+ * Buscador de movimientos específicos
+ * Permite ingresar el ID de un movimiento y buscarlo
  */
 export function SaleSearchBar({ onSaleFound, loading }) {
     const [saleId, setSaleId] = useState('');
@@ -10,19 +10,19 @@ export function SaleSearchBar({ onSaleFound, loading }) {
 
     const handleSearch = async () => {
         if (!saleId.trim()) {
-            setError('Ingresa un número de venta');
+            setError('Ingresa un número de movimiento');
             return;
         }
 
         try {
             setError('');
-            // Llamar al backend para obtener detalles de la venta
+            // Llamar al backend para obtener detalles del movimiento
             const sale = await window.api.reports.getSaleDetail(parseInt(saleId));
 
             if (sale) {
                 onSaleFound(sale);
             } else {
-                setError('Venta no encontrada');
+                setError('Movimiento no encontrado');
             }
         } catch (err) {
             setError(`Error: ${err.message}`);
@@ -38,14 +38,14 @@ export function SaleSearchBar({ onSaleFound, loading }) {
     return (
         <div className="p-4 mb-6 border border-blue-200 rounded-lg bg-blue-50 dark:bg-blue-900/20 dark:border-blue-800">
             <h3 className="mb-4 text-base font-semibold text-gray-800 dark:text-white">
-                Buscar Venta Específica
+                Buscar Movimiento Específico
             </h3>
 
             <div className="flex gap-3">
                 <div className="flex-1">
                     <input
                         type="number"
-                        placeholder="Ingresa número de venta (ej: 5)"
+                        placeholder="Ingresa número de movimiento (ej: 5)"
                         value={saleId}
                         onChange={(e) => setSaleId(e.target.value)}
                         onKeyPress={handleKeyPress}

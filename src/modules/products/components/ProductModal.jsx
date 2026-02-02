@@ -114,8 +114,8 @@ export const ProductModal = ({ isOpen, onClose, onSubmit, loading, product }) =>
         newErrors.purchase_cost = 'El costo de compra debe ser mayor a 0';
       }
 
-      if (formData.sale_price && formData.purchase_cost && 
-          parseFloat(formData.sale_price) < parseFloat(formData.purchase_cost)) {
+      if (formData.sale_price && formData.purchase_cost &&
+        parseFloat(formData.sale_price) < parseFloat(formData.purchase_cost)) {
         newErrors.sale_price = 'El precio de venta no puede ser menor al costo de compra';
       }
 
@@ -141,11 +141,11 @@ export const ProductModal = ({ isOpen, onClose, onSubmit, loading, product }) =>
     const productData = {
       ...formData,
       // Para PRECIO_LIBRE, usar 0 como valores por defecto para precios
-      sale_price: formData.tipo_venta === 'PRECIO_LIBRE' 
-        ? 0 
+      sale_price: formData.tipo_venta === 'PRECIO_LIBRE'
+        ? 0
         : parseFloat(formData.sale_price),
-      purchase_cost: formData.tipo_venta === 'PRECIO_LIBRE' 
-        ? 0 
+      purchase_cost: formData.tipo_venta === 'PRECIO_LIBRE'
+        ? 0
         : parseFloat(formData.purchase_cost),
       stock: formData.tipo_venta === 'PRECIO_LIBRE' ? 0 : parseFloat(formData.stock),
       tipo_venta: formData.tipo_venta,
@@ -187,7 +187,7 @@ export const ProductModal = ({ isOpen, onClose, onSubmit, loading, product }) =>
         <div className="sticky top-0 flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-              {product?.id ? 'Editar Producto' : 'Nuevo Producto'}
+              {product?.id ? 'Editar Bien' : 'Nuevo Bien'}
             </h2>
             {product?.barcode && !product?.id && (
               <p className="mt-1 text-sm text-blue-600 dark:text-blue-400">
@@ -267,7 +267,7 @@ export const ProductModal = ({ isOpen, onClose, onSubmit, loading, product }) =>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
                   Opcional. Puedes generarlo automáticamente o ingresarlo manualmente.
                 </p>
-                
+
                 {/* Vista previa del código de barras */}
                 {formData.barcode && (
                   <div className="p-4 border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-900/50 dark:border-gray-700">
@@ -297,8 +297,8 @@ export const ProductModal = ({ isOpen, onClose, onSubmit, loading, product }) =>
                       </button>
                     </div>
                     <div className="flex items-center justify-center p-4 bg-white rounded dark:bg-gray-800">
-                      <canvas 
-                        ref={barcodeCanvasRef} 
+                      <canvas
+                        ref={barcodeCanvasRef}
                         className="max-w-full"
                         width={300}
                         height={120}
@@ -483,7 +483,7 @@ export const ProductModal = ({ isOpen, onClose, onSubmit, loading, product }) =>
                 htmlFor="stock"
                 className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300"
               >
-                {formData.tipo_venta === 'PESO' ? 'Stock inicial (kg)' : formData.tipo_venta === 'UNIDAD' ? 'Stock inicial (piezas)' : 'Stock inicial'} 
+                {formData.tipo_venta === 'PESO' ? 'Stock inicial (kg)' : formData.tipo_venta === 'UNIDAD' ? 'Stock inicial (piezas)' : 'Stock inicial'}
                 {formData.tipo_venta !== 'PRECIO_LIBRE' && <span className="text-red-500">*</span>}
               </label>
               <input

@@ -11,7 +11,6 @@ import ProductsView from './modules/products/ProductsView';
 import UsersView from './modules/users/UsersView';
 import ProductEntryView from './modules/product-entry/ProductEntryView';
 import { InventoryExitView } from './modules/inventory-exit/InventoryExitView';
-import CustodyEntryView from './modules/custody-entry/CustodyEntryView';
 import ReportsView from './modules/reports/ReportsView';
 import EntryHistoryView from './modules/entry-history/EntryHistoryView';
 import MovementsView from './modules/movement-history/MovementsView';
@@ -51,7 +50,6 @@ root.render(
             <Route path="/products" element={<ProductsView />} />
             <Route path="/product-entry" element={<ProductEntryView />} />
             <Route path="/inventory-exit" element={<InventoryExitView />} />
-            <Route path="/custody-entry" element={<CustodyEntryView />} />
             <Route path="/entry-history" element={<EntryHistoryView />} />
             <Route path="/movement-history" element={<MovementsView />} />
             <Route path="/users" element={<UsersView />} />

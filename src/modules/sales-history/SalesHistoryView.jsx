@@ -6,7 +6,7 @@ import { SalesTable } from './components/SalesTable';
 import { SalesDetailModal } from './components/SalesDetailModal';
 
 /**
- * Vista principal del historial de ventas
+ * Vista principal del historial de movimientos
  */
 export default function SalesHistoryView() {
   const {
@@ -31,9 +31,9 @@ export default function SalesHistoryView() {
       <div className="max-w-full mx-auto">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Historial de Ventas</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Historial de Movimientos</h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">
-            Consulta y administra todas las ventas realizadas
+            Consulta y administra todos los movimientos de bienes registrados
           </p>
         </div>
 

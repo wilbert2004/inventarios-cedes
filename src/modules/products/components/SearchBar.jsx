@@ -48,7 +48,7 @@ export const SearchBar = ({ searchTerm, onSearchChange, onAddClick }) => {
               d="M12 4v16m8-8H4"
             />
           </svg>
-          Nuevo Producto
+          Nuevo Bien
         </button>
       </div>
     </div>

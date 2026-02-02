@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 /**
- * Componente de modal para ver detalles de una venta
+ * Componente de modal para ver detalles de un movimiento
  */
 export const SalesDetailModal = ({ isOpen, sale, onClose, onReprint }) => {
   if (!isOpen || !sale) return null;
@@ -19,7 +19,7 @@ export const SalesDetailModal = ({ isOpen, sale, onClose, onReprint }) => {
         <div className="sticky top-0 flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
           <div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Detalles de Venta #{sale.id}
+              Detalles de Movimiento #{sale.id}
             </h2>
             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
               {new Date(sale.created_at).toLocaleString('es-MX', {

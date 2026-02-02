@@ -10,7 +10,7 @@ import { SummaryPanel } from './components/SummaryPanel';
 import { Toast } from '../../components/Toast';
 
 /**
- * Vista principal de entrada de productos (recepción de mercancía)
+ * Vista principal de entrada de bienes (recepción de mercancía)
  */
 export default function ProductEntryView() {
   const { user } = useAuth();
@@ -148,7 +148,7 @@ export default function ProductEntryView() {
    * Cancelar entrada
    */
   const handleCancel = () => {
-    if (entryCart.length > 0 && window.confirm('¿Cancelar la entrada de productos?')) {
+    if (entryCart.length > 0 && window.confirm('¿Cancelar la entrada de bienes?')) {
       clearCart();
     }
   };
@@ -158,9 +158,9 @@ export default function ProductEntryView() {
       <div className="max-w-full mx-auto">
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Entrada de Productos</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Entrada de Bienes</h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">
-            Registra la recepción de mercancía y actualiza el inventario
+            Registra la recepción de bienes y actualiza el inventario
           </p>
         </div>
 

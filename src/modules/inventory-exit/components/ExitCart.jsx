@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
 /**
- * Carrito de salida de productos
- * Muestra los productos a extraer y permite ajustar cantidades
+ * Carrito de salida de bienes
+ * Muestra los bienes a extraer y permite ajustar cantidades
  */
 export function ExitCart({ items, products, onUpdateQuantity, onRemoveItem, isProcessing }) {
     const [expandedItem, setExpandedItem] = useState(null);
@@ -56,7 +56,7 @@ export function ExitCart({ items, products, onUpdateQuantity, onRemoveItem, isPr
                         />
                     </svg>
                     <p className="text-gray-500 dark:text-gray-400">
-                        No hay productos agregados. Busca y añade productos a la salida.
+                        No hay bienes agregados. Busca y añade bienes a la salida.
                     </p>
                 </div>
             </div>

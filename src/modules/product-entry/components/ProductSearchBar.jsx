@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useState, useRef, useEffect } from 'react';
 
 /**
- * Componente de barra de búsqueda para entrada de productos
+ * Componente de barra de búsqueda para entrada de bienes
  */
 export const ProductSearchBar = ({ onProductFound, onProductNotFound }) => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -19,11 +19,11 @@ export const ProductSearchBar = ({ onProductFound, onProductNotFound }) => {
    */
   const handleSearch = (e) => {
     e.preventDefault();
-    
+
     if (!searchTerm.trim()) return;
 
     const qty = parseInt(quantity) || 1;
-    
+
     if (qty <= 0) {
       alert('La cantidad debe ser mayor a 0');
       return;
@@ -31,7 +31,7 @@ export const ProductSearchBar = ({ onProductFound, onProductNotFound }) => {
 
     // Notificar a la vista principal
     onProductFound(searchTerm, qty);
-    
+
     // Limpiar campos
     setSearchTerm('');
     setQuantity('1');

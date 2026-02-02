@@ -1,6 +1,6 @@
-# Módulo de Entrada de Productos
+# Módulo de Entrada de Bienes
 
-MVP (Mínimo Producto Viable) para registrar la recepción de mercancía y actualizar el stock automáticamente.
+MVP (Mínimo Producto Viable) para registrar la recepción de bienes y actualizar el inventario automáticamente.
 
 ## 📁 Estructura del Módulo
 
@@ -11,7 +11,7 @@ product-entry/
 │   └── useProductEntry.js        # Lógica de negocio
 ├── components/
 │   ├── ProductSearchBar.jsx      # Búsqueda con cantidad
-│   ├── EntryCart.jsx             # Carrito de productos a ingresar
+   ├── EntryCart.jsx             # Carrito de bienes a ingresar
 │   └── SummaryPanel.jsx          # Resumen y botones de acción
 └── README.md                      # Este archivo
 ```
@@ -27,20 +27,20 @@ product-entry/
    - Auto-focus para escaneo continuo
 
 2. **Carrito de Entrada**
-   - Múltiples productos a la vez
+   - Múltiples bienes a la vez
    - Control de cantidad (botones +/- o input directo)
-   - Muestra stock actual → stock nuevo
-   - Eliminar productos del carrito
+   - Muestra inventario actual → inventario nuevo
+   - Eliminar bienes del carrito
 
 3. **Actualización Automática**
-   - Actualiza stock en tabla `products`
+   - Actualiza inventario en tabla `custody_products`
    - Registra movimientos en `inventory_movements`
    - Tipo: `IN`
    - Referencia: `PRODUCT_ENTRY`
    - Transacción atómica (todo o nada)
 
 4. **Resumen**
-   - Total de productos a ingresar
+   - Total de bienes a ingresar
    - Cantidad total de unidades
    - Valor estimado del inventario
 
@@ -52,6 +52,7 @@ product-entry/
 ## 📊 Base de Datos
 
 ### Tabla: `inventory_movements`
+
 ```sql
 product_id    INTEGER NOT NULL
 type          TEXT NOT NULL         -- "IN"
@@ -62,8 +63,9 @@ created_at    TEXT
 ```
 
 ### Actualización de Stock
+
 ```sql
-UPDATE products 
+UPDATE products
 SET stock = stock + [cantidad]
 WHERE id = [product_id]
 ```
@@ -102,9 +104,11 @@ WHERE id = [product_id]
 ## 🚀 API (IPC Handlers)
 
 ### `inventory:productEntry`
+
 Procesa la entrada de múltiples productos.
 
 **Input:**
+
 ```javascript
 {
   userId: 1,
@@ -124,6 +128,7 @@ Procesa la entrada de múltiples productos.
 ```
 
 **Output:**
+
 ```javascript
 {
   success: true,
@@ -145,9 +150,11 @@ Procesa la entrada de múltiples productos.
 ```
 
 ### `inventory:getMovements`
+
 Obtiene historial de movimientos (futuro).
 
 **Input:** `filters` (opcional)
+
 ```javascript
 {
   type: "IN",              // Filtrar por tipo
@@ -160,9 +167,11 @@ Obtiene historial de movimientos (futuro).
 ## 🧩 Componentes
 
 ### ProductSearchBar
+
 Barra de búsqueda con campo de cantidad integrado.
 
 **Props:**
+
 ```javascript
 {
   onProductFound: (searchTerm: string, quantity: number) => void
@@ -170,6 +179,7 @@ Barra de búsqueda con campo de cantidad integrado.
 ```
 
 **Características:**
+
 - ✅ Campo de búsqueda con ícono de código de barras
 - ✅ Campo de cantidad numérica
 - ✅ Botón "Agregar" verde
@@ -177,9 +187,11 @@ Barra de búsqueda con campo de cantidad integrado.
 - ✅ Submit con Enter
 
 ### EntryCart
+
 Lista de productos a ingresar.
 
 **Props:**
+
 ```javascript
 {
   items: Array<Product & { quantity: number }>,
@@ -189,6 +201,7 @@ Lista de productos a ingresar.
 ```
 
 **Características:**
+
 - ✅ Muestra stock actual y stock después de entrada
 - ✅ Control de cantidad: botones +/- o input directo
 - ✅ Botón de eliminar por producto
@@ -196,9 +209,11 @@ Lista de productos a ingresar.
 - ✅ Scroll automático si hay muchos productos
 
 ### SummaryPanel
+
 Panel de resumen y acciones.
 
 **Props:**
+
 ```javascript
 {
   totals: {
@@ -214,6 +229,7 @@ Panel de resumen y acciones.
 ```
 
 **Características:**
+
 - ✅ Resumen de la entrada
 - ✅ Valor estimado del inventario entrante
 - ✅ Botón "Registrar Entrada" (verde)
@@ -223,11 +239,13 @@ Panel de resumen y acciones.
 ## 🎨 UX/UI
 
 ### Colores
+
 - **Verde**: Entrada de productos (positivo, aumenta stock)
 - **Gris**: Información neutral
 - **Rojo**: Cancelar o eliminar
 
 ### Estados
+
 - ✅ Loading mientras carga productos
 - ✅ Carrito vacío con mensaje guía
 - ✅ Error si producto no existe
@@ -235,6 +253,7 @@ Panel de resumen y acciones.
 - ✅ Processing con spinner
 
 ### Responsive
+
 - ✅ Mobile: Layout vertical
 - ✅ Desktop: Layout con sidebar de resumen
 - ✅ Tabla con scroll horizontal si es necesario
@@ -242,6 +261,7 @@ Panel de resumen y acciones.
 ## 🔧 Custom Hook: useProductEntry
 
 ### Estados
+
 ```javascript
 {
   products,          // Array de productos disponibles
@@ -259,6 +279,7 @@ Panel de resumen y acciones.
 ```
 
 ### Funciones
+
 ```javascript
 {
   searchProduct,     // (term: string) => Product | null
@@ -274,6 +295,7 @@ Panel de resumen y acciones.
 ## 🎯 Casos de Uso
 
 ### Caso 1: Llegó un proveedor con mercancía
+
 1. Ve a "Entrada de Productos"
 2. Escanea el código de barras del primer producto
 3. Ingresa la cantidad recibida
@@ -284,6 +306,7 @@ Panel de resumen y acciones.
 8. ¡Stock actualizado automáticamente!
 
 ### Caso 2: Entrada rápida de un solo producto
+
 1. Escanea código
 2. Escribe cantidad
 3. Enter (submit)
@@ -291,6 +314,7 @@ Panel de resumen y acciones.
 5. Listo
 
 ### Caso 3: Corrección de inventario
+
 1. Busca el producto por nombre
 2. Ingresa la cantidad a aumentar
 3. Agrega más productos si es necesario
@@ -317,8 +341,8 @@ INSERT INTO inventory_movements (
   CURRENT_TIMESTAMP
 );
 
-UPDATE products 
-SET stock = stock + 24 
+UPDATE products
+SET stock = stock + 24
 WHERE id = 1;
 ```
 
@@ -371,4 +395,3 @@ WHERE id = 1;
 - [x] Limpieza automática del carrito
 
 **¡MVP Completo y Funcional!** ✅
-

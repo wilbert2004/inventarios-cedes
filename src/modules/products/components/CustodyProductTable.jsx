@@ -1,7 +1,7 @@
 import React from 'react';
 
 /**
- * Componente de tabla de productos en resguardo
+ * Componente de tabla de bienes en custodia
  */
 export const CustodyProductTable = ({ products, loading, onEdit, onDelete, onChangeStatus, onViewHistory }) => {
     const statusLabels = {
@@ -57,10 +57,10 @@ export const CustodyProductTable = ({ products, loading, onEdit, onDelete, onCha
                         />
                     </svg>
                     <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
-                        No hay productos registrados
+                        No hay bienes registrados
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400">
-                        Comienza registrando un nuevo producto
+                        Comienza registrando un nuevo bien
                     </p>
                 </div>
             </div>
@@ -83,19 +83,10 @@ export const CustodyProductTable = ({ products, loading, onEdit, onDelete, onCha
                                 Marca/Modelo
                             </th>
                             <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">
-                                Serie
-                            </th>
-                            <th className="px-4 py-3 text-center text-sm font-semibold text-gray-900 dark:text-white">
-                                Cant.
-                            </th>
-                            <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">
                                 Motivo
                             </th>
                             <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">
                                 Estado
-                            </th>
-                            <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900 dark:text-white">
-                                Centro
                             </th>
                             <th className="px-4 py-3 text-right text-sm font-semibold text-gray-900 dark:text-white">
                                 Acciones
@@ -124,20 +115,6 @@ export const CustodyProductTable = ({ products, loading, onEdit, onDelete, onCha
                                     </div>
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap">
-                                    {product.serial_number ? (
-                                        <span className="font-mono text-sm text-gray-700 dark:text-gray-300">
-                                            {product.serial_number}
-                                        </span>
-                                    ) : (
-                                        <span className="text-gray-400">-</span>
-                                    )}
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap text-center">
-                                    <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                                        {product.quantity}
-                                    </span>
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap">
                                     <span className={`px-2 py-1 inline-flex text-xs font-semibold rounded-full ${getReasonBadge(product.reason)}`}>
                                         {product.reason}
                                     </span>
@@ -145,11 +122,6 @@ export const CustodyProductTable = ({ products, loading, onEdit, onDelete, onCha
                                 <td className="px-4 py-3 whitespace-nowrap">
                                     <span className={`px-2 py-1 inline-flex text-xs font-semibold rounded-full ${getStatusColor(product.product_status)}`}>
                                         {statusLabels[product.product_status] || product.product_status}
-                                    </span>
-                                </td>
-                                <td className="px-4 py-3 whitespace-nowrap">
-                                    <span className="text-sm text-gray-700 dark:text-gray-300 max-w-xs truncate">
-                                        {product.center_origin || '-'}
                                     </span>
                                 </td>
                                 <td className="px-4 py-3 text-right whitespace-nowrap">
