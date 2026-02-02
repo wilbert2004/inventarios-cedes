@@ -173,30 +173,64 @@ ipcMain.handle("reports:getTopProducts", async (event, startDate, endDate, limit
  */
 ipcMain.handle("reports:generatePDF", async (event, reportData, reportType) => {
     try {
+        console.log('=== Iniciando generatePDF ===');
+        console.log('reportType:', reportType);
+        console.log('reportData:', JSON.stringify(reportData, null, 2));
+
         const { dialog } = require("electron");
         const { jsPDF } = require("jspdf");
         const fs = require("fs");
 
         // Validar datos
-        if (!reportData || !reportData.dateRange) {
+        if (!reportData) {
             throw new Error("Los datos del reporte son inválidos");
         }
 
-        // Obtener información de la empresa
-        const companyStmt = db.prepare(`
-            SELECT key, value FROM settings 
-            WHERE key IN ('company_name', 'company_rfc', 'company_phone', 'company_address', 'company_email', 'company_website')
-        `);
-        const companyRows = companyStmt.all();
-        const companyInfo = {};
-        companyRows.forEach(row => {
-            companyInfo[row.key] = row.value || '';
-        });
+        // Validar según tipo de reporte
+        if (reportType !== "custody-detail" && !reportData.dateRange) {
+            throw new Error("Los datos del reporte son inválidos");
+        }
+
+        if (reportType === "custody-detail" && !reportData.product) {
+            throw new Error("Falta la información del producto");
+        }
+
+        console.log('Validaciones pasadas correctamente');
+
+        // Obtener información de la empresa (opcional - puede no existir la tabla settings)
+        let companyInfo = {
+            company_name: 'Absolute Gestión de Bienes',
+            company_rfc: '',
+            company_phone: '',
+            company_address: '',
+            company_email: '',
+            company_website: ''
+        };
+
+        try {
+            const companyStmt = db.prepare(`
+                SELECT key, value FROM settings 
+                WHERE key IN ('company_name', 'company_rfc', 'company_phone', 'company_address', 'company_email', 'company_website')
+            `);
+            const companyRows = companyStmt.all();
+            companyRows.forEach(row => {
+                companyInfo[row.key] = row.value || '';
+            });
+            console.log('Información de empresa cargada:', companyInfo);
+        } catch (settingsError) {
+            console.warn('No se pudo cargar información de empresa (tabla settings no existe):', settingsError.message);
+            // Continuar con valores por defecto
+        }
 
         // 1. ABRIR DIÁLOGO PARA ELEGIR DÓNDE GUARDAR
         const fileName = reportType === "CUSTOM"
             ? `Venta-${reportData.sales[0]?.id || 'unknown'}-${new Date().toISOString().split('T')[0]}.pdf`
-            : `Reporte-${reportType}-${new Date().toISOString().split('T')[0]}.pdf`;
+            : reportType === "custody-detail"
+                ? `Bien-${reportData.product?.inventory_number || 'desconocido'}-${new Date().toISOString().split('T')[0]}.pdf`
+                : `Reporte-${reportType}-${new Date().toISOString().split('T')[0]}.pdf`;
+
+        console.log('Nombre de archivo sugerido:', fileName);
+        console.log('Abriendo diálogo para guardar...');
 
         const { filePath, canceled } = await dialog.showSaveDialog({
             title: "Guardar Reporte PDF",
@@ -207,8 +241,11 @@ ipcMain.handle("reports:generatePDF", async (event, reportData, reportType) => {
             ],
         });
 
+        console.log('Resultado del diálogo - canceled:', canceled, 'filePath:', filePath);
+
         // Si el usuario canceló, retornar null
         if (canceled || !filePath) {
+            console.log('Usuario canceló la descarga');
             return null;
         }
 
@@ -310,7 +347,7 @@ ipcMain.handle("reports:generatePDF", async (event, reportData, reportType) => {
 
             yPosition += 7;
             doc.setFont(undefined, 'bold');
-            doc.text(`Método de Pago:`, 15, yPosition);
+            doc.text(`Metodo de Pago:`, 15, yPosition);
             doc.setFont(undefined, 'normal');
             doc.text(sale.payment_method || "N/A", 50, yPosition);
 
@@ -396,6 +433,175 @@ ipcMain.handle("reports:generatePDF", async (event, reportData, reportType) => {
                 doc.text(companyInfo.company_website, pageWidth / 2, pageHeight - 10, { align: "center" });
             }
             doc.text(`Generado: ${new Date().toLocaleString("es-ES")}`, pageWidth / 2, pageHeight - 5, { align: "center" });
+        } else if (reportType === "custody-detail" && reportData.product) {
+            // ============ FORMATO PARA DETALLE DE PRODUCTO EN CUSTODIA ============
+            const product = reportData.product;
+
+            // Dibujar encabezado de empresa
+            yPosition = drawCompanyHeader();
+            yPosition += 5;
+
+            // Título del documento con fondo
+            doc.setFillColor(41, 128, 185); // Azul
+            doc.rect(10, yPosition, pageWidth - 20, 12, 'F');
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(255, 255, 255);
+            doc.text("DETALLE DE BIEN EN CUSTODIA", pageWidth / 2, yPosition + 8, { align: "center" });
+            doc.setTextColor(0, 0, 0);
+            yPosition += 17;
+
+            // SECCIÓN 1: Identificación del Producto
+            doc.setFillColor(52, 152, 219); // Azul claro
+            doc.rect(10, yPosition, pageWidth - 20, 7, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'bold');
+            doc.text("IDENTIFICACION DEL PRODUCTO", 15, yPosition + 5);
+            doc.setTextColor(0, 0, 0);
+            yPosition += 10;
+
+            doc.setFontSize(9);
+            const section1Items = [
+                { label: "No Inventario:", value: product.inventory_number, bold: true },
+                { label: "No Serie:", value: product.serial_number },
+                { label: "Descripcion:", value: product.description },
+                { label: "Marca:", value: product.brand },
+                { label: "Modelo:", value: product.model }
+            ];
+
+            section1Items.forEach((item) => {
+                doc.setFont(undefined, 'bold');
+                doc.text(item.label, 15, yPosition);
+                doc.setFont(undefined, item.bold ? 'bold' : 'normal');
+                doc.text(item.value, 50, yPosition);
+                yPosition += 6;
+            });
+
+            yPosition += 3;
+
+            // SECCIÓN 2: Estado y Clasificación
+            doc.setFillColor(46, 204, 113); // Verde
+            doc.rect(10, yPosition, pageWidth - 20, 7, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'bold');
+            doc.text("ESTADO Y CLASIFICACION", 15, yPosition + 5);
+            doc.setTextColor(0, 0, 0);
+            yPosition += 10;
+
+            doc.setFontSize(9);
+            const section2Items = [
+                { label: "Estado Actual:", value: product.product_status },
+                { label: "Motivo:", value: product.reason },
+                { label: "Cantidad:", value: product.quantity.toString() }
+            ];
+
+            section2Items.forEach((item) => {
+                doc.setFont(undefined, 'bold');
+                doc.text(item.label, 15, yPosition);
+                doc.setFont(undefined, 'normal');
+                doc.text(item.value, 50, yPosition);
+                yPosition += 6;
+            });
+
+            yPosition += 3;
+
+            // SECCIÓN 3: Datos de Origen
+            doc.setFillColor(155, 89, 182); // Morado
+            doc.rect(10, yPosition, pageWidth - 20, 7, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'bold');
+            doc.text("DATOS DE ORIGEN", 15, yPosition + 5);
+            doc.setTextColor(0, 0, 0);
+            yPosition += 10;
+
+            doc.setFontSize(9);
+            const section3Items = [
+                { label: "Centro de Trabajo:", value: product.center_origin },
+                { label: "Folio de Referencia:", value: product.reference_folio },
+                { label: "Entregado por:", value: product.entregado_por_centro_trabajo },
+                { label: "Fecha de Entrega:", value: product.fecha_entrega ? new Date(product.fecha_entrega).toLocaleDateString("es-MX") : 'N/A' }
+            ];
+
+            section3Items.forEach((item) => {
+                doc.setFont(undefined, 'bold');
+                doc.text(item.label, 15, yPosition);
+                doc.setFont(undefined, 'normal');
+                doc.text(item.value, 55, yPosition);
+                yPosition += 6;
+            });
+
+            yPosition += 3;
+
+            // SECCIÓN 4: Datos de Recepción
+            doc.setFillColor(230, 126, 34); // Naranja
+            doc.rect(10, yPosition, pageWidth - 20, 7, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'bold');
+            doc.text("DATOS DE RECEPCION", 15, yPosition + 5);
+            doc.setTextColor(0, 0, 0);
+            yPosition += 10;
+
+            doc.setFontSize(9);
+            doc.setFont(undefined, 'bold');
+            doc.text("Chofer:", 15, yPosition);
+            yPosition += 5;
+
+            doc.setFont(undefined, 'normal');
+            doc.text(`Recibido por: ${product.recibido_por_chofer}`, 20, yPosition);
+            yPosition += 5;
+            doc.text(`Fecha: ${product.fecha_recepcion_chofer ? new Date(product.fecha_recepcion_chofer).toLocaleDateString("es-MX") : 'N/A'}`, 20, yPosition);
+            yPosition += 8;
+
+            doc.setFont(undefined, 'bold');
+            doc.text("Almacen:", 15, yPosition);
+            yPosition += 5;
+
+            doc.setFont(undefined, 'normal');
+            doc.text(`Recibido por: ${product.recibido_por_almacen}`, 20, yPosition);
+            yPosition += 5;
+            doc.text(`Fecha: ${product.fecha_recepcion_almacen ? new Date(product.fecha_recepcion_almacen).toLocaleDateString("es-MX") : 'N/A'}`, 20, yPosition);
+            yPosition += 8;
+
+            // SECCIÓN 5: Información Adicional
+            doc.setFillColor(149, 165, 166); // Gris
+            doc.rect(10, yPosition, pageWidth - 20, 7, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(11);
+            doc.setFont(undefined, 'bold');
+            doc.text("INFORMACION ADICIONAL", 15, yPosition + 5);
+            doc.setTextColor(0, 0, 0);
+            yPosition += 10;
+
+            doc.setFontSize(9);
+            doc.setFont(undefined, 'bold');
+            doc.text("Notas-Observaciones:", 15, yPosition);
+            yPosition += 5;
+            doc.setFont(undefined, 'normal');
+            const notesLines = doc.splitTextToSize(product.notes, pageWidth - 30);
+            doc.text(notesLines, 15, yPosition);
+            yPosition += notesLines.length * 5 + 5;
+
+            doc.setFont(undefined, 'bold');
+            doc.text("Fecha de Registro:", 15, yPosition);
+            doc.setFont(undefined, 'normal');
+            doc.text(product.created_at ? new Date(product.created_at).toLocaleDateString("es-MX") : 'N/A', 55, yPosition);
+            yPosition += 6;
+
+            doc.setFont(undefined, 'bold');
+            doc.text("Fecha de Baja:", 15, yPosition);
+            doc.setFont(undefined, 'normal');
+            doc.text(product.fecha_baja ? new Date(product.fecha_baja).toLocaleDateString("es-MX") : 'N/A', 55, yPosition);
+
+            // Pie de página
+            doc.setFontSize(8);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(127, 140, 141);
+            doc.text("Documento generado automaticamente - Sistema de Gestion de Bienes", pageWidth / 2, pageHeight - 15, { align: "center" });
+            doc.text(`Generado: ${new Date().toLocaleString("es-ES")}`, pageWidth / 2, pageHeight - 10, { align: "center" });
         } else {
             // ============ FORMATO PARA REPORTES DE PERÍODO ============
 
@@ -428,7 +634,7 @@ ipcMain.handle("reports:generatePDF", async (event, reportData, reportType) => {
 
             yPosition += 7;
             doc.setFont(undefined, 'bold');
-            doc.text(`Período:`, 15, yPosition);
+            doc.text(`Periodo:`, 15, yPosition);
             doc.setFont(undefined, 'normal');
             doc.text(
                 `${reportData.dateRange.start.toLocaleDateString("es-ES")} al ${reportData.dateRange.end.toLocaleDateString("es-ES")}`,
@@ -608,10 +814,12 @@ ipcMain.handle("reports:generatePDF", async (event, reportData, reportType) => {
         const pdfBuffer = doc.output("arraybuffer");
         fs.writeFileSync(filePath, Buffer.from(pdfBuffer));
 
-        return filePath;
+        console.log('PDF guardado exitosamente en:', filePath);
+        return { success: true, filePath, fileName: fileName.split('/').pop().split('\\').pop() };
     } catch (error) {
         console.error("Error generating PDF:", error);
-        throw error;
+        console.error("Stack trace:", error.stack);
+        return { success: false, error: error.message || 'Error al generar el PDF' };
     }
 });
 

@@ -15,7 +15,7 @@ export default function RegisterView() {
     username: '',
     password: '',
     confirmPassword: '',
-    role: 'cashier',
+    role: 'admin',
     active: true,
   });
 
@@ -39,7 +39,7 @@ export default function RegisterView() {
    */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const result = await registerUser(formData);
 
     if (result.success) {
@@ -49,7 +49,7 @@ export default function RegisterView() {
         username: '',
         password: '',
         confirmPassword: '',
-        role: 'cashier',
+        role: 'admin',
         active: true,
       });
 
@@ -258,12 +258,12 @@ export default function RegisterView() {
                 onChange={handleChange}
                 className="w-full px-4 py-3 text-gray-900 bg-white border border-gray-300 rounded-lg outline-none dark:bg-gray-700 dark:border-gray-600 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="cashier">Cajero</option>
                 <option value="admin">Administrador</option>
+                <option value="user">Usuario Regular</option>
               </select>
               <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                <strong>Cajero:</strong> Puede realizar ventas y consultar productos.<br />
-                <strong>Administrador:</strong> Acceso completo al sistema.
+                <strong>Administrador:</strong> Acceso completo al sistema y gestión de usuarios.<br />
+                <strong>Usuario Regular:</strong> Acceso limitado según permisos asignados.
               </p>
             </div>
 

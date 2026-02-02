@@ -1,6 +1,6 @@
 # Módulo de Historial de Entradas
 
-Vista completa para consultar y administrar el historial de entradas de productos (recepción de mercancía).
+Vista completa para consultar y administrar el historial de entradas de bienes (recepción de mercancía).
 
 ## 📁 Estructura del Módulo
 
@@ -20,12 +20,14 @@ entry-history/
 ## 🎯 Características
 
 ### Estadísticas en Tiempo Real
+
 - ✅ Total de entradas (cantidad)
-- ✅ Productos ingresados (cantidad)
+- ✅ Bienes ingresados (cantidad)
 - ✅ Cantidad total (unidades)
-- ✅ Promedio de productos por entrada
+- ✅ Promedio de bienes por entrada
 
 ### Búsqueda y Filtros
+
 - ✅ Búsqueda por ID de entrada
 - ✅ Búsqueda por nombre de producto
 - ✅ Búsqueda por código de barras
@@ -38,23 +40,26 @@ entry-history/
 - ✅ Botón de actualizar
 
 ### Tabla de Entradas
+
 - ✅ Número de entrada
 - ✅ Fecha y hora
 - ✅ Usuario que registró
-- ✅ Cantidad de productos
+- ✅ Cantidad de bienes
 - ✅ Cantidad total ingresada
 - ✅ Acción: Ver detalles
 
 ### Modal de Detalles
+
 - ✅ Información completa de la entrada
-- ✅ Lista detallada de productos ingresados
-- ✅ Cantidades por producto
-- ✅ Códigos de barras de productos
+- ✅ Lista detallada de bienes ingresados
+- ✅ Cantidades por bien
+- ✅ Códigos de barras de bienes
 - ✅ Resumen total
 
 ## 🔧 Custom Hook: useEntryHistory
 
 ### Estados
+
 ```javascript
 {
   entries,                // Array de entradas filtradas (agrupadas)
@@ -70,6 +75,7 @@ entry-history/
 ```
 
 ### Funciones
+
 ```javascript
 {
   setSearchTerm,          // Actualizar término de búsqueda
@@ -83,6 +89,7 @@ entry-history/
 ### Agrupación de Entradas
 
 Las entradas se agrupan automáticamente por:
+
 - **Timestamp** (redondeado a minutos)
 - **Usuario** que registró la entrada
 
@@ -91,9 +98,11 @@ Esto permite que múltiples productos ingresados en la misma transacción aparez
 ## 📊 Componentes
 
 ### FilterBar
+
 Barra de búsqueda y filtros para el historial.
 
 **Props:**
+
 ```javascript
 {
   searchTerm: string,
@@ -105,9 +114,11 @@ Barra de búsqueda y filtros para el historial.
 ```
 
 ### StatisticsCards
+
 Tarjetas con estadísticas del historial.
 
 **Props:**
+
 ```javascript
 {
   statistics: {
@@ -120,9 +131,11 @@ Tarjetas con estadísticas del historial.
 ```
 
 ### EntriesTable
+
 Tabla que muestra todas las entradas.
 
 **Props:**
+
 ```javascript
 {
   entries: Array<Entry>,
@@ -132,6 +145,7 @@ Tabla que muestra todas las entradas.
 ```
 
 **Entry Type:**
+
 ```typescript
 {
   id: number,
@@ -154,9 +168,11 @@ Tabla que muestra todas las entradas.
 ```
 
 ### EntryDetailModal
+
 Modal con detalles completos de una entrada.
 
 **Props:**
+
 ```javascript
 {
   isOpen: boolean,
@@ -168,18 +184,19 @@ Modal con detalles completos de una entrada.
 ## 🎨 Paleta de Colores
 
 ### Estadísticas
+
 - **Total de Entradas**: Azul
-- **Productos Ingresados**: Verde
+- **Bienes Ingresados**: Verde
 - **Cantidad Total**: Morado
 - **Promedio por Entrada**: Naranja
 
 ## 🚀 Uso
 
 ```javascript
-import EntryHistoryView from './modules/entry-history/EntryHistoryView';
+import EntryHistoryView from "./modules/entry-history/EntryHistoryView";
 
 // En tu router
-<Route path="/entry-history" element={<EntryHistoryView />} />
+<Route path="/entry-history" element={<EntryHistoryView />} />;
 ```
 
 ## 📝 Flujo de Uso
@@ -210,6 +227,7 @@ import EntryHistoryView from './modules/entry-history/EntryHistoryView';
 ## 🔄 Integración con API
 
 El hook utiliza las siguientes APIs:
+
 - `window.api.inventory.getMovements({ type: 'IN', reference: 'PRODUCT_ENTRY' })` - Obtener movimientos de entrada
 
 ## 📋 Notas Técnicas
@@ -217,6 +235,7 @@ El hook utiliza las siguientes APIs:
 ### Agrupación de Movimientos
 
 Los movimientos se agrupan por:
+
 1. **Timestamp redondeado a minutos**: Movimientos registrados en el mismo minuto se consideran parte de la misma entrada
 2. **Usuario**: Solo se agrupan movimientos del mismo usuario
 
@@ -234,4 +253,3 @@ Por defecto, se obtienen hasta 1000 movimientos para agrupar. Si necesitas más,
 - [ ] Paginación para grandes volúmenes de datos
 - [ ] Gráficos de tendencias de entradas
 - [ ] Búsqueda avanzada con múltiples criterios
-

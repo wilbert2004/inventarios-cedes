@@ -127,4 +127,8 @@ contextBridge.exposeInMainWorld("api", {
     getHistory: (productId) => ipcRenderer.invoke("custodyLifecycle:getHistory", productId),
     getStatistics: () => ipcRenderer.invoke("custodyLifecycle:getStatistics"),
   },
+
+  shell: {
+    openPath: (path) => ipcRenderer.invoke("shell:openPath", path),
+  },
 });

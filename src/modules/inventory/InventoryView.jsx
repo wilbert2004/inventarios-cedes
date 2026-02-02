@@ -4,11 +4,11 @@ import { useAuth } from '../../context/AuthContext';
 import { Toast } from '../../components/Toast';
 
 /**
- * Vista principal: Módulo de Registro y Resguardo de Productos
+ * Vista principal: Módulo de Registro y Custodia de Bienes
  * Sistema de Gestión de Ciclo de Vida Completo
  * 
  * NO maneja ventas ni stock comercial.
- * Registra todo el ciclo de vida del producto con historial inmutable.
+ * Registra todo el ciclo de vida del bien con historial inmutable.
  * Estados: EN_TRANSITO → EN_RESGUARDO → BAJA_DEFINITIVA
  */
 export default function InventoryView() {
@@ -223,10 +223,10 @@ export default function InventoryView() {
                 />
               </svg>
               <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-                No hay productos registrados
+                No hay bienes registrados
               </h3>
               <p className="mt-2 text-gray-600 dark:text-gray-400">
-                Los productos aparecerán aquí cuando sean registrados
+                Los bienes aparecerán aquí cuando sean registrados
               </p>
             </div>
           ) : (

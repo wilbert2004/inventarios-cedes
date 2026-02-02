@@ -1,6 +1,6 @@
-# Módulo de Historial de Ventas
+# Módulo de Historial de Movimientos
 
-Vista completa para consultar y administrar el historial de ventas realizadas.
+Vista completa para consultar y administrar el historial de movimientos de bienes registrados.
 
 ## 📁 Estructura del Módulo
 
@@ -20,12 +20,14 @@ sales-history/
 ## 🎯 Características
 
 ### Estadísticas en Tiempo Real
+
 - ✅ Total de ventas (cantidad)
 - ✅ Ingresos totales ($)
 - ✅ Artículos vendidos (cantidad)
 - ✅ Ticket promedio ($)
 
 ### Búsqueda y Filtros
+
 - ✅ Búsqueda por número de venta
 - ✅ Búsqueda por total
 - ✅ Filtro por fecha:
@@ -36,6 +38,7 @@ sales-history/
 - ✅ Botón de actualizar
 
 ### Tabla de Ventas
+
 - ✅ Número de venta
 - ✅ Fecha y hora
 - ✅ Cantidad de artículos
@@ -44,6 +47,7 @@ sales-history/
 - ✅ Acciones: Ver detalles y Reimprimir
 
 ### Modal de Detalles
+
 - ✅ Información completa de la venta
 - ✅ Lista detallada de productos vendidos
 - ✅ Cantidades, precios unitarios y subtotales
@@ -53,6 +57,7 @@ sales-history/
 ## 🔧 Custom Hook: useSalesHistory
 
 ### Estados
+
 ```javascript
 {
   sales,                // Array de ventas filtradas
@@ -68,6 +73,7 @@ sales-history/
 ```
 
 ### Funciones
+
 ```javascript
 {
   loadSales,           // () => Promise<void>
@@ -80,6 +86,7 @@ sales-history/
 ```
 
 ### Estadísticas
+
 ```javascript
 {
   totalSales: number,      // Cantidad de ventas
@@ -92,9 +99,11 @@ sales-history/
 ## 📊 Componentes
 
 ### FilterBar
+
 Barra de búsqueda y filtros.
 
 **Props:**
+
 ```javascript
 {
   searchTerm: string,
@@ -106,9 +115,11 @@ Barra de búsqueda y filtros.
 ```
 
 ### StatisticsCards
+
 Tarjetas de estadísticas con íconos de colores.
 
 **Props:**
+
 ```javascript
 {
   statistics: {
@@ -121,9 +132,11 @@ Tarjetas de estadísticas con íconos de colores.
 ```
 
 ### SalesTable
+
 Tabla completa de ventas con acciones.
 
 **Props:**
+
 ```javascript
 {
   sales: Array<Sale>,
@@ -134,6 +147,7 @@ Tabla completa de ventas con acciones.
 ```
 
 **Sale Type:**
+
 ```typescript
 {
   id: number,
@@ -146,9 +160,11 @@ Tabla completa de ventas con acciones.
 ```
 
 ### SalesDetailModal
+
 Modal con detalles completos de una venta.
 
 **Props:**
+
 ```javascript
 {
   isOpen: boolean,
@@ -159,6 +175,7 @@ Modal con detalles completos de una venta.
 ```
 
 **SaleDetails Type:**
+
 ```typescript
 {
   id: number,
@@ -183,11 +200,13 @@ Modal con detalles completos de una venta.
 ## 🎨 Paleta de Colores
 
 ### Métodos de Pago
+
 - **Efectivo**: Verde (`bg-green-100 text-green-800`)
 - **Tarjeta**: Azul (`bg-blue-100 text-blue-800`)
 - **Transferencia**: Morado (`bg-purple-100 text-purple-800`)
 
 ### Estadísticas
+
 - **Total de Ventas**: Azul
 - **Ingresos Totales**: Verde
 - **Artículos Vendidos**: Morado
@@ -196,10 +215,10 @@ Modal con detalles completos de una venta.
 ## 🚀 Uso
 
 ```javascript
-import SalesHistoryView from './modules/sales-history/SalesHistoryView';
+import SalesHistoryView from "./modules/sales-history/SalesHistoryView";
 
 // En tu router
-<Route path="/sales-history" element={<SalesHistoryView />} />
+<Route path="/sales-history" element={<SalesHistoryView />} />;
 ```
 
 ## 📝 Flujo de Uso
@@ -232,6 +251,7 @@ import SalesHistoryView from './modules/sales-history/SalesHistoryView';
 ## 🔄 Integración con API
 
 El hook utiliza las siguientes APIs:
+
 - `window.api.sales.getAll()` - Obtener todas las ventas
 - `window.api.sales.getById(id)` - Obtener detalles de una venta
 - `window.api.sales.reprintTicket(id)` - Reimprimir ticket
@@ -287,4 +307,3 @@ El hook utiliza las siguientes APIs:
 - **Mobile**: Tabla con scroll horizontal
 - **Tablet**: Layout optimizado
 - **Desktop**: Vista completa con todas las columnas
-

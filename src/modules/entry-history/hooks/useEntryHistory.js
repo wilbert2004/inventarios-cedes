@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 
 /**
- * Custom hook para manejar la lógica del historial de entradas de productos
+ * Custom hook para manejar la lógica del historial de entradas de bienes
  */
 export const useEntryHistory = () => {
   const [movements, setMovements] = useState([]);
@@ -27,7 +27,7 @@ export const useEntryHistory = () => {
         limit: 1000, // Obtener más registros para agrupar
       });
       setMovements(data || []);
-      
+
       // Agrupar movimientos por entrada (mismo timestamp y usuario)
       const grouped = groupMovementsByEntry(data || []);
       setEntries(grouped);
@@ -48,7 +48,7 @@ export const useEntryHistory = () => {
 
     // Agrupar por timestamp (redondeado a minutos) y usuario
     const grouped = {};
-    
+
     movementsList.forEach((movement) => {
       const timestamp = new Date(movement.created_at);
       // Redondear a minutos para agrupar movimientos de la misma entrada
@@ -59,9 +59,9 @@ export const useEntryHistory = () => {
         timestamp.getHours(),
         timestamp.getMinutes()
       ).toISOString();
-      
+
       const key = `${roundedTime}_${movement.user_id || 'unknown'}`;
-      
+
       if (!grouped[key]) {
         grouped[key] = {
           id: movement.id, // Usar el primer ID como identificador
@@ -73,7 +73,7 @@ export const useEntryHistory = () => {
           totalQuantity: 0,
         };
       }
-      
+
       grouped[key].items.push({
         id: movement.id,
         productId: movement.product_id,
@@ -84,13 +84,13 @@ export const useEntryHistory = () => {
         reference: movement.reference,
         createdAt: movement.created_at,
       });
-      
+
       grouped[key].totalItems += 1;
       grouped[key].totalQuantity += movement.quantity;
     });
 
     // Convertir a array y ordenar por fecha descendente
-    return Object.values(grouped).sort((a, b) => 
+    return Object.values(grouped).sort((a, b) =>
       new Date(b.timestamp) - new Date(a.timestamp)
     );
   };
@@ -126,10 +126,10 @@ export const useEntryHistory = () => {
     if (dateFilter !== 'all') {
       const entryDate = new Date(entry.timestamp);
       const now = new Date();
-      
+
       switch (dateFilter) {
         case 'today': {
-          const isToday = 
+          const isToday =
             entryDate.getDate() === now.getDate() &&
             entryDate.getMonth() === now.getMonth() &&
             entryDate.getFullYear() === now.getFullYear();

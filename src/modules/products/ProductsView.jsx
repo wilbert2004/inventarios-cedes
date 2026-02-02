@@ -6,7 +6,7 @@ import { ProductHistory } from './components/ProductHistory';
 import { StateChangeModal } from './components/StateChangeModal';
 
 /**
- * Vista principal del módulo de Productos en Resguardo (CEDES)
+ * Vista principal del módulo de Bienes en Custodia (CEDES)
  */
 export default function ProductsView() {
   const {
@@ -161,6 +161,7 @@ export default function ProductsView() {
     } else {
       setStatusFilterLocal('');
       setReasonFilterLocal('');
+      await searchProducts(''); // Recargar todos los productos
     }
   };
 
@@ -172,6 +173,7 @@ export default function ProductsView() {
     } else {
       setSearchInput('');
       setReasonFilterLocal('');
+      await searchProducts(''); // Recargar todos los productos
     }
   };
 
@@ -183,6 +185,7 @@ export default function ProductsView() {
     } else {
       setSearchInput('');
       setStatusFilterLocal('');
+      await searchProducts(''); // Recargar todos los productos
     }
   };
 
@@ -192,7 +195,7 @@ export default function ProductsView() {
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Sistema de Productos en Resguardo
+            Sistema de Bienes en Custodia
           </h1>
           <p className="mt-1 text-gray-600 dark:text-gray-400">
             Gestión de bienes bajo resguardo en el CEDES (Centro de Distribución y Resguardo)
@@ -314,13 +317,13 @@ export default function ProductsView() {
               </select>
             </div>
 
-            {/* Botón Nuevo Producto */}
+            {/* Botón Nuevo Bien */}
             <div className="flex items-end">
               <button
                 onClick={() => handleOpenForm()}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition"
               >
-                + Nuevo Producto
+                + Nuevo Bien
               </button>
             </div>
           </div>
@@ -344,7 +347,7 @@ export default function ProductsView() {
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                  {selectedProduct ? 'Editar Producto' : 'Nuevo Producto en Resguardo'}
+                  {selectedProduct ? 'Editar Bien' : 'Nuevo Bien en Custodia'}
                 </h2>
                 <button
                   onClick={handleCloseForm}

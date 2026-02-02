@@ -104,7 +104,7 @@ export const EntriesTable = ({ entries, loading, onViewDetails }) => {
             No hay entradas registradas
           </h3>
           <p className="text-gray-600 dark:text-gray-400">
-            Las entradas de productos aparecerán aquí una vez que se registren
+            Las entradas de bienes aparecerán aquí una vez que se registren
           </p>
         </div>
       </div>

@@ -81,12 +81,12 @@ export default function LoginView() {
             <div className="inline-flex items-center justify-center mb-6 p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/30 rounded-full">
               <img
                 src={logoImage}
-                alt="Absolute POS Logo"
+                alt="Absolute Gestión de Bienes"
                 className="object-contain w-32 h-32"
               />
             </div>
-            <h1 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white">Sistema de inventario</h1>
-            <p className="text-gray-600 dark:text-gray-300">Inicia sesión para continuar</p>
+            <h1 className="mb-2 text-3xl font-bold text-gray-900 dark:text-white">Absolute Gestión de Bienes</h1>
+            <p className="text-gray-600 dark:text-gray-300">Sistema de control, resguardo y trazabilidad de bienes</p>
           </div>
 
           {/* Mensaje de error */}
@@ -231,7 +231,7 @@ export default function LoginView() {
           {/* Footer */}
           <div className="mt-6 text-center">
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              © 2026 Sistema de inventario. Todos los derechos reservados.
+              © 2026 Absolute Gestión de Bienes. Todos los derechos reservados.
             </p>
           </div>
         </div>

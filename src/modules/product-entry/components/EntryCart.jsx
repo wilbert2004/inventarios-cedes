@@ -2,8 +2,8 @@ import * as React from 'react';
 import { useState, useEffect } from 'react';
 
 /**
- * Componente del carrito de entrada de productos
- * Soporta cantidad y estado (condition) de cada producto
+ * Componente del carrito de entrada de bienes
+ * Soporta cantidad y estado (condition) de cada bien
  */
 export const EntryCart = ({ items, onUpdateQuantity, onRemove, onUpdateCondition }) => {
   // Estado local para los valores de cantidad mientras se editan
@@ -40,10 +40,10 @@ export const EntryCart = ({ items, onUpdateQuantity, onRemove, onUpdateCondition
             />
           </svg>
           <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
-            No hay productos para ingresar
+            No hay bienes para ingresar
           </h3>
           <p className="text-gray-600 dark:text-gray-400">
-            Escanea o busca productos para comenzar la entrada
+            Escanea o busca bienes para comenzar la entrada
           </p>
         </div>
       </div>

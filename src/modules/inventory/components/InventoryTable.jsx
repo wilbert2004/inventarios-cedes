@@ -31,9 +31,9 @@ export function InventoryTable({ products, loading, onRefresh, sortBy, sortDir, 
             d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
           />
         </svg>
-        <p className="text-lg font-medium text-gray-900 dark:text-white">No hay productos en el inventario</p>
+        <p className="text-lg font-medium text-gray-900 dark:text-white">No hay bienes en el inventario</p>
         <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-          Agrega productos desde el módulo de Productos
+          Agrega bienes desde el módulo de Bienes en Custodia
         </p>
       </div>
     );

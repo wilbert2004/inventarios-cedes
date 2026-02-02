@@ -48,7 +48,7 @@ export default function ReportsView() {
     // ============ FUNCIONES ============
 
     /**
-     * Procesa las ventas en formato que el gráfico puede usar
+     * Procesa los movimientos en formato que el gráfico puede usar
      * Por ejemplo: Agrupa por día para reportes semanales
      */
     /**
@@ -176,9 +176,9 @@ export default function ReportsView() {
             <div className="w-full max-w-[1440px] mx-auto">
                 {/* Encabezado */}
                 <div className="mb-6">
-                    <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Reportes de Ventas</h1>
+                    <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Reportes de Movimientos</h1>
                     <p className="mt-2 text-gray-600 dark:text-gray-400">
-                        Analiza el desempeño de tus ventas en diferentes períodos
+                        Analiza el desempeño de tus movimientos de bienes en diferentes períodos
                     </p>
                 </div>
 
@@ -320,7 +320,7 @@ export default function ReportsView() {
                                 {reportData.generatedAt?.toLocaleString('es-ES')}
                             </p>
                             <p>
-                                <strong className="dark:text-white">Ventas procesadas:</strong> {reportData.sales?.length || 0}
+                                <strong className="dark:text-white">Movimientos procesados:</strong> {reportData.sales?.length || 0}
                             </p>
                         </div>
                     </div>

@@ -23,6 +23,7 @@ auth/
 ## 🎯 Características
 
 ### Gestión de Usuarios (UsersView)
+
 - ✅ Lista completa de usuarios
 - ✅ Búsqueda por nombre, username o rol
 - ✅ Botón para crear nuevos usuarios
@@ -31,6 +32,7 @@ auth/
 - ✅ Protección del admin principal (no se puede eliminar)
 
 ### Registro de Usuarios (RegisterView)
+
 - ✅ Formulario completo con validaciones
 - ✅ Campos:
   - Nombre completo (requerido)
@@ -45,6 +47,7 @@ auth/
 - ✅ Redirección automática después de crear
 
 ### Seguridad
+
 - ✅ **Contraseñas hasheadas con bcrypt** (salt de 10 rondas)
 - ✅ Nunca se almacenan contraseñas en texto plano
 - ✅ Validación de username único
@@ -69,15 +72,17 @@ CREATE TABLE users (
 ## 🔐 Sistema de Roles
 
 ### Admin (Administrador)
+
 - Acceso completo al sistema
 - Puede crear/modificar usuarios
 - Puede ver todos los reportes
 - Acceso a configuración
 
-### Cashier (Cajero)
-- Puede realizar ventas
-- Puede consultar productos
-- Ver historial de sus propias ventas
+### Cashier (Usuario Regular)
+
+- Puede consultar y registrar movimientos de bienes
+- Puede consultar catálogo de bienes
+- Ver historial de sus propios movimientos
 - Acceso limitado
 
 ## 🔑 Usuario por Defecto
@@ -95,9 +100,11 @@ Rol: Administrador
 ## 🚀 API (IPC Handlers)
 
 ### `users:create`
+
 Crea un nuevo usuario con contraseña hasheada.
 
 **Input:**
+
 ```javascript
 {
   name: string,
@@ -109,6 +116,7 @@ Crea un nuevo usuario con contraseña hasheada.
 ```
 
 **Output:**
+
 ```javascript
 {
   id: number,
@@ -120,14 +128,17 @@ Crea un nuevo usuario con contraseña hasheada.
 ```
 
 **Errores:**
+
 - `El nombre de usuario ya existe`
 - `Todos los campos son requeridos`
 - `Error al crear usuario`
 
 ### `users:getAll`
+
 Obtiene todos los usuarios (sin contraseñas).
 
 **Output:**
+
 ```javascript
 [
   {
@@ -136,12 +147,13 @@ Obtiene todos los usuarios (sin contraseñas).
     username: string,
     role: string,
     active: number,
-    created_at: string
-  }
-]
+    created_at: string,
+  },
+];
 ```
 
 ### `users:update`
+
 Actualiza un usuario existente.
 
 **Input:** `(id: number, userData: object)`
@@ -149,6 +161,7 @@ Actualiza un usuario existente.
 **Nota:** Si se envía `password`, se hashea automáticamente.
 
 ### `users:delete`
+
 Desactiva un usuario (soft delete).
 
 **Input:** `(id: number)`
@@ -156,9 +169,11 @@ Desactiva un usuario (soft delete).
 **Protección:** No permite eliminar el usuario ID 1.
 
 ### `users:login`
+
 Valida credenciales y retorna datos del usuario.
 
 **Input:**
+
 ```javascript
 {
   username: string,
@@ -167,6 +182,7 @@ Valida credenciales y retorna datos del usuario.
 ```
 
 **Output:**
+
 ```javascript
 {
   id: number,
@@ -177,43 +193,47 @@ Valida credenciales y retorna datos del usuario.
 ```
 
 **Errores:**
+
 - `Usuario o contraseña incorrectos`
 - `Usuario inactivo. Contacta al administrador`
 
 ## 🔧 Custom Hooks
 
 ### useUsers
+
 Maneja la lógica de la vista de usuarios.
 
 ```javascript
 const {
-  users,          // Array filtrado
-  allUsers,       // Array completo
-  loading,        // boolean
-  error,          // string | null
-  searchTerm,     // string
-  setSearchTerm,  // function
-  deleteUser,     // (id) => Promise
-  refreshUsers,   // () => Promise
+  users, // Array filtrado
+  allUsers, // Array completo
+  loading, // boolean
+  error, // string | null
+  searchTerm, // string
+  setSearchTerm, // function
+  deleteUser, // (id) => Promise
+  refreshUsers, // () => Promise
 } = useUsers();
 ```
 
 ### useUserRegistration
+
 Maneja la lógica de registro.
 
 ```javascript
 const {
-  loading,        // boolean
-  error,          // string | null
-  success,        // boolean
-  registerUser,   // (userData) => Promise
-  clearMessages,  // () => void
+  loading, // boolean
+  error, // string | null
+  success, // boolean
+  registerUser, // (userData) => Promise
+  clearMessages, // () => void
 } = useUserRegistration();
 ```
 
 ## ✅ Validaciones
 
 ### Frontend
+
 - ✅ Nombre requerido
 - ✅ Username mínimo 3 caracteres
 - ✅ Username único
@@ -222,6 +242,7 @@ const {
 - ✅ Rol requerido
 
 ### Backend
+
 - ✅ Validación de username único
 - ✅ Hasheo automático de contraseñas con bcrypt
 - ✅ Verificación de contraseñas con bcrypt.compare
@@ -231,14 +252,18 @@ const {
 ## 🎨 Componentes
 
 ### UsersView
+
 Vista principal con:
+
 - Lista de usuarios
 - Búsqueda en tiempo real
 - Botón "Nuevo Usuario"
 - Manejo de errores
 
 ### RegisterView
+
 Formulario de registro con:
+
 - Todos los campos necesarios
 - Validación en tiempo real
 - Botones de mostrar/ocultar contraseña
@@ -247,7 +272,9 @@ Formulario de registro con:
 - Panel informativo de seguridad
 
 ### UsersTable
+
 Tabla responsive con:
+
 - Avatar con inicial del nombre
 - Badges de color para roles y estados
 - Fecha de creación formateada
@@ -269,12 +296,14 @@ Tabla responsive con:
 ## 🔒 Seguridad con bcrypt
 
 ### ¿Por qué bcrypt?
+
 - ✅ Diseñado específicamente para contraseñas
 - ✅ Resistente a ataques de fuerza bruta
 - ✅ Salt automático por usuario
 - ✅ Ajustable (10 rondas = buena seguridad/performance)
 
 ### Proceso de Hasheo
+
 ```javascript
 // Al crear usuario
 const salt = bcrypt.genSaltSync(10);
@@ -286,6 +315,7 @@ const isValid = bcrypt.compareSync(password, hash);
 ```
 
 ### Seguridad de la Contraseña
+
 - No se almacena en texto plano NUNCA
 - Cada usuario tiene su propio salt único
 - Imposible revertir el hash a la contraseña original
@@ -294,17 +324,20 @@ const isValid = bcrypt.compareSync(password, hash);
 ## 🚀 Cómo Usar
 
 ### Crear un nuevo usuario
+
 1. Navega a `/users`
 2. Click en "Nuevo Usuario"
 3. Completa el formulario
 4. Click en "Registrar Usuario"
 
 ### Ver usuarios
+
 1. Navega a `/users`
 2. Usa la búsqueda para filtrar
 3. Click en desactivar para desactivar usuarios
 
 ### Login (próximamente integrado)
+
 1. Usa el LoginView
 2. Ingresa username y password
 3. El sistema valida con bcrypt
@@ -345,7 +378,7 @@ const handleSubmit = async (e) => {
   try {
     const user = await window.api.users.login({ username, password });
     // Guardar sesión (localStorage, context, etc.)
-    navigate('/sales');
+    navigate("/sales");
   } catch (error) {
     setError(error.message);
   }
@@ -363,6 +396,3 @@ const handleSubmit = async (e) => {
 7. ¡Usuario creado con contraseña segura!
 
 La contraseña será hasheada automáticamente con bcrypt. 🔒
-
-
-

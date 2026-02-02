@@ -32,7 +32,6 @@ export const Sidebar = () => {
     const adminOnlyRoutes = [
       '/product-entry',
       '/inventory-exit',
-      '/custody-entry',
       '/users',
       '/reports',
     ];
@@ -268,7 +267,7 @@ export const Sidebar = () => {
             },
             {
               to: '/product-entry',
-              label: 'Entrada de Productos',
+              label: 'Entrada de Bienes',
               icon: (
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
@@ -282,7 +281,7 @@ export const Sidebar = () => {
             },
             {
               to: '/inventory-exit',
-              label: 'Salida de Inventario',
+              label: 'Salida de Bienes',
               icon: (
                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path
@@ -290,20 +289,6 @@ export const Sidebar = () => {
                     strokeLinejoin="round"
                     strokeWidth={2}
                     d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                  />
-                </svg>
-              ),
-            },
-            {
-              to: '/custody-entry',
-              label: 'Resguardo de Bienes',
-              icon: (
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M20 7l-8-4-8 4m0 0l8 4m-8-4v10l8 4m0-10l8 4m-8-4v10l8 4M9 7l8 4"
                   />
                 </svg>
               ),

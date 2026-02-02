@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 /**
- * Componente de fila de venta
+ * Componente de fila de movimiento
  */
 const SaleRow = ({ sale, onViewDetails, onReprint }) => {
   const paymentMethodLabels = {
@@ -105,7 +105,7 @@ const SaleRow = ({ sale, onViewDetails, onReprint }) => {
 };
 
 /**
- * Componente de tabla de ventas
+ * Componente de tabla de movimientos
  */
 export const SalesTable = ({ sales, loading, onViewDetails, onReprint }) => {
   if (loading) {
@@ -113,7 +113,7 @@ export const SalesTable = ({ sales, loading, onViewDetails, onReprint }) => {
       <div className="p-12 bg-white rounded-lg shadow-sm dark:bg-gray-800">
         <div className="flex flex-col items-center justify-center">
           <div className="w-12 h-12 mb-4 border-b-2 border-blue-600 rounded-full dark:border-blue-400 animate-spin"></div>
-          <p className="text-gray-600 dark:text-gray-400">Cargando ventas...</p>
+          <p className="text-gray-600 dark:text-gray-400">Cargando movimientos...</p>
         </div>
       </div>
     );
@@ -137,10 +137,10 @@ export const SalesTable = ({ sales, loading, onViewDetails, onReprint }) => {
             />
           </svg>
           <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
-            No hay ventas registradas
+            No hay movimientos registrados
           </h3>
           <p className="text-gray-600 dark:text-gray-400">
-            Las ventas aparecerán aquí una vez que se realicen transacciones
+            Los movimientos aparecerán aquí una vez que se realicen transacciones
           </p>
         </div>
       </div>

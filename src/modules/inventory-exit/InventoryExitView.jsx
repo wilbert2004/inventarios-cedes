@@ -7,8 +7,8 @@ import { useSalesExit } from './hooks/useSalesExit';
 import { Toast } from '../../components/Toast';
 
 /**
- * Vista principal para gestión de salidas de inventario
- * Permite registrar extracciones de productos del inventario
+ * Vista principal para gestión de salidas de bienes
+ * Permite registrar extracciones de bienes del inventario
  */
 export function InventoryExitView() {
     const formRef = useRef(null);
@@ -58,7 +58,7 @@ export function InventoryExitView() {
             // Validar que no esté duplicado en el carrito
             const alreadyInCart = exitCart.some((item) => item.id === product.id);
             if (alreadyInCart) {
-                showToast('Este producto ya está en el carrito', 'warning');
+                showToast('Este bien ya está en el carrito', 'warning');
                 return;
             }
 
@@ -82,7 +82,7 @@ export function InventoryExitView() {
 
             // Validar carrito
             if (exitCart.length === 0) {
-                showToast('Debe haber al menos un producto en el carrito', 'error');
+                showToast('Debe haber al menos un bien en el carrito', 'error');
                 return;
             }
 
@@ -182,10 +182,10 @@ export function InventoryExitView() {
                 {/* Encabezado */}
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                        Salida de Inventario
+                        Salida de Bienes
                     </h1>
                     <p className="mt-2 text-gray-600 dark:text-gray-400">
-                        Registra extracciones y salidas de productos del inventario
+                        Registra extracciones y salidas de bienes del inventario
                     </p>
                 </div>
 
@@ -245,8 +245,8 @@ export function InventoryExitView() {
                         💡 Consejos para usar esta sección
                     </h3>
                     <ul className="mt-2 ml-4 text-sm text-blue-800 dark:text-blue-400 list-disc space-y-1">
-                        <li>Busca productos por código de barras o nombre</li>
-                        <li>Especifica el motivo de la salida (venta, devolución, etc.)</li>
+                        <li>Busca bienes por código de barras o nombre</li>
+                        <li>Especifica el motivo de la salida (traslado, devolución, etc.)</li>
                         <li>El folio debe ser único para cada salida</li>
                         <li>No puedes extraer más cantidad de la que hay disponible</li>
                         <li>Completa los datos de entrega y recepción antes de procesar</li>

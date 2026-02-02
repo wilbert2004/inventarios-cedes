@@ -95,10 +95,10 @@ export const ProductTable = ({ products, loading, onedit }) => {
             />
           </svg>
           <h3 className="mb-2 text-lg font-medium text-gray-900 dark:text-white">
-            No hay productos
+            No hay bienes
           </h3>
           <p className="text-gray-600 dark:text-gray-400">
-            Comienza agregando tu primer producto usando el botón "Nuevo Producto"
+            Comienza agregando tu primer bien usando el botón "Nuevo Bien"
           </p>
         </div>
       </div>

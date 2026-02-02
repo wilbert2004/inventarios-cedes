@@ -1,10 +1,10 @@
-# Módulo de Productos en Resguardo (CEDES)
+# Módulo de Bienes en Custodia (CEDES)
 
 ## 📋 Descripción
 
-Este módulo gestiona el registro y control de productos (bienes) que llegan a un CEDES (Centro de Distribución y Resguardo) provenientes de centros de trabajo. Los productos quedan bajo resguardo del almacén y se registran basándose en documentos oficiales de entrega-recepción.
+Este módulo gestiona el registro y control de bienes que llegan a un CEDES (Centro de Distribución y Resguardo) provenientes de centros de trabajo. Los bienes quedan bajo custodia del almacén y se registran basándose en documentos oficiales de entrega-recepción.
 
-**Importante**: Este módulo NO es para venta. Los productos NO son inventario comercial.
+**Importante**: Este módulo NO es para venta. Los bienes NO son inventario comercial.
 
 ## 🎯 Características Principales
 

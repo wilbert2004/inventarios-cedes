@@ -17,6 +17,10 @@ try {
 const db = require('./main/db/connection');
 require('./main/db/migrations');
 
+// Limpiar usuarios regulares al iniciar
+const { cleanupRegularUsers } = require('./main/cleanup-users');
+cleanupRegularUsers();
+
 // Validar integridad de la base de datos al iniciar
 try {
   const integrityCheck = db.prepare("PRAGMA integrity_check").get();

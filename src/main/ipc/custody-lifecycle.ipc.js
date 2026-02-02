@@ -7,7 +7,7 @@ const db = require("../db/connection");
  * Sistema de Gestión de Ciclo de Vida Completo
  * ========================================
  * 
- * Este módulo NO maneja ventas ni stock comercial.
+ * Este módulo maneja la custodia, trazabilidad y ciclo de vida de los bienes.
  * Registra todo el ciclo de vida del producto con historial inmutable.
  * 
  * Estados: EN_TRANSITO → EN_RESGUARDO → BAJA_DEFINITIVA

@@ -6,7 +6,7 @@ import * as React from 'react';
 const UserRow = ({ user, onDelete }) => {
   const roleLabels = {
     admin: 'Administrador',
-    cashier: 'Cajero',
+    cashier: 'Usuario Regular',
   };
 
   const roleColors = {
@@ -38,9 +38,8 @@ const UserRow = ({ user, onDelete }) => {
       </td>
       <td className="px-6 py-4 whitespace-nowrap">
         <span
-          className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-            roleColors[user.role] || 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
-          }`}
+          className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${roleColors[user.role] || 'bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200'
+            }`}
         >
           {roleLabels[user.role] || user.role}
         </span>

@@ -153,13 +153,12 @@ export const Layout = () => {
             <div className="flex items-center justify-center w-10 h-10 overflow-hidden bg-white rounded-lg dark:bg-gray-700">
               <img
                 src={logoImage}
-                alt="Absolute Ventas"
+                alt="Absolute Gestión de Bienes"
                 className="object-contain w-full h-full"
               />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-gray-900 dark:text-white">Absolute Ventas</h1>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Sistema POS</p>
+              <h1 className="text-lg font-bold text-gray-900 dark:text-white">Absolute Gestión de Bienes</h1>
             </div>
           </div>
         </div>
@@ -265,7 +264,7 @@ export const Layout = () => {
                   {user?.name || 'Usuario'}
                 </button>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {user?.role === 'admin' ? 'Administrador' : 'Cajero'}
+                  {user?.role === 'admin' ? 'Administrador' : 'Usuario Regular'}
                 </p>
               </div>
               <button
