@@ -1,0 +1,62 @@
+{
+  "name": "absolute-pos-app",
+  "productName": "absolute-pos-app",
+  "version": "1.0.0",
+  "description": "My Electron application description",
+  "main": ".vite/main/main.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "make:rebuild": "npx electron-rebuild --only better-sqlite3 && npm run make",
+    "publish": "electron-forge publish",
+    "lint": "echo \"No linting configured\"",
+    "postinstall": "electron-rebuild",
+    "check-icons": "node scripts/check-icons.js"
+  },
+  "keywords": [],
+  "author": {
+    "name": "Eduardo Baas Kauil",
+    "email": "eduardo.baas@emtech.digital"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.28.5",
+    "@babel/preset-react": "^7.28.5",
+    "@electron-forge/cli": "^7.10.2",
+    "@electron-forge/maker-deb": "^7.10.2",
+    "@electron-forge/maker-rpm": "^7.10.2",
+    "@electron-forge/maker-squirrel": "^7.10.2",
+    "@electron-forge/maker-zip": "^7.10.2",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.10.2",
+    "@electron-forge/plugin-fuses": "^7.10.2",
+    "@electron-forge/plugin-vite": "^7.11.1",
+    "@electron-forge/plugin-webpack": "^7.10.2",
+    "@electron/fuses": "^1.8.0",
+    "@electron/rebuild": "^4.0.2",
+    "@vercel/webpack-asset-relocator-loader": "^1.7.3",
+    "@vitejs/plugin-react": "^5.1.2",
+    "autoprefixer": "^10.4.23",
+    "babel-loader": "^10.0.0",
+    "css-loader": "^6.11.0",
+    "electron": "39.2.7",
+    "node-loader": "^2.1.0",
+    "postcss": "^8.5.6",
+    "postcss-loader": "^8.2.0",
+    "style-loader": "^3.3.4",
+    "tailwindcss": "^3.4.19",
+    "vite": "^7.3.1"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "better-sqlite3": "^12.5.0",
+    "electron-squirrel-startup": "^1.0.1",
+    "jsbarcode": "^3.12.3",
+    "jspdf": "^4.0.0",
+    "lucide-react": "^0.563.0",
+    "pdfkit": "^0.13.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-router-dom": "^7.11.0"
+  }
+}
