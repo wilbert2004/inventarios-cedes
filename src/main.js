@@ -48,6 +48,7 @@ require('./main/ipc/license.ipc');
 require('./main/ipc/custody.ipc');
 require('./main/ipc/custody-products.ipc');
 require('./main/ipc/custody-lifecycle.ipc');
+require('./main/ipc/custody-exit.ipc'); // Salida de bienes en resguardo
 
 // Iniciar servicio de respaldos automáticos
 const backupService = require('./main/services/backup.service');

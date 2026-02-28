@@ -12,6 +12,7 @@ require("./printer.ipc");
 require("./settings.ipc");
 require("./custody.ipc");
 require("./custody-lifecycle.ipc"); // Módulo de Registro y Resguardo
+require("./custody-exit.ipc"); // Módulo de Salida de Resguardo
 require("./shell.ipc"); // Shell commands
 
 function createWindow() {

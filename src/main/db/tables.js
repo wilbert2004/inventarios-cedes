@@ -223,7 +223,7 @@ module.exports = {
     CREATE TABLE IF NOT EXISTS custody_product_history (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       product_id INTEGER NOT NULL,
-      tipo_evento TEXT CHECK(tipo_evento IN ('registro','entrega','recepcion_chofer','recepcion_almacen','cambio_estado','baja','actualizacion')) NOT NULL,
+      tipo_evento TEXT CHECK(tipo_evento IN ('registro','entrega','recepcion_chofer','recepcion_almacen','cambio_estado','baja','actualizacion','salida')) NOT NULL,
       descripcion TEXT NOT NULL,
       previous_status TEXT,
       new_status TEXT,

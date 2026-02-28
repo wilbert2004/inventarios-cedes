@@ -11,6 +11,7 @@ import ProductsView from './modules/products/ProductsView';
 import UsersView from './modules/users/UsersView';
 import ProductEntryView from './modules/product-entry/ProductEntryView';
 import { InventoryExitView } from './modules/inventory-exit/InventoryExitView';
+import { CustodyExitProvider } from './modules/inventory-exit/context/CustodyExitContext';
 import ReportsView from './modules/reports/ReportsView';
 import EntryHistoryView from './modules/entry-history/EntryHistoryView';
 import MovementsView from './modules/movement-history/MovementsView';
@@ -33,35 +34,37 @@ root.render(
   <HashRouter>
     <ThemeProvider>
       <AuthProvider>
-        <Routes>
-          {/* Rutas de autenticación sin Layout */}
-          <Route path="/" element={<LoginView />} />
-          <Route path="/forgot-password" element={<ForgotPasswordView />} />
-          <Route path="/reset-password" element={<ResetPasswordView />} />
+        <CustodyExitProvider>
+          <Routes>
+            {/* Rutas de autenticación sin Layout */}
+            <Route path="/" element={<LoginView />} />
+            <Route path="/forgot-password" element={<ForgotPasswordView />} />
+            <Route path="/reset-password" element={<ResetPasswordView />} />
 
-          {/* Rutas protegidas con Layout */}
-          <Route
-            element={
-              <ProtectedRoute>
-                <Layout />
-              </ProtectedRoute>
-            }
-          >
-            <Route path="/products" element={<ProductsView />} />
-            <Route path="/product-entry" element={<ProductEntryView />} />
-            <Route path="/inventory-exit" element={<InventoryExitView />} />
-            <Route path="/entry-history" element={<EntryHistoryView />} />
-            <Route path="/movement-history" element={<MovementsView />} />
-            <Route path="/users" element={<UsersView />} />
-            <Route path="/users/register" element={<RegisterView />} />
-            <Route path="/control-general" element={<ControlGeneralView />} />
-            <Route path="/reports" element={<ReportsView />} />
-            <Route path="/change-password" element={<ChangePasswordView />} />
-            <Route path="/profile" element={<ProfileView />} />
-            {/* Fallback para rutas no existentes */}
-            <Route path="*" element={<Navigate to="/control-general" replace />} />
-          </Route>
-        </Routes>
+            {/* Rutas protegidas con Layout */}
+            <Route
+              element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }
+            >
+              <Route path="/products" element={<ProductsView />} />
+              <Route path="/product-entry" element={<ProductEntryView />} />
+              <Route path="/inventory-exit" element={<InventoryExitView />} />
+              <Route path="/entry-history" element={<EntryHistoryView />} />
+              <Route path="/movement-history" element={<MovementsView />} />
+              <Route path="/users" element={<UsersView />} />
+              <Route path="/users/register" element={<RegisterView />} />
+              <Route path="/control-general" element={<ControlGeneralView />} />
+              <Route path="/reports" element={<ReportsView />} />
+              <Route path="/change-password" element={<ChangePasswordView />} />
+              <Route path="/profile" element={<ProfileView />} />
+              {/* Fallback para rutas no existentes */}
+              <Route path="*" element={<Navigate to="/control-general" replace />} />
+            </Route>
+          </Routes>
+        </CustodyExitProvider>
       </AuthProvider>
     </ThemeProvider>
   </HashRouter>
