@@ -19,13 +19,11 @@ export const StateChangeModal = ({ product, onSubmit, onCancel, isSubmitting = f
     const statusLabels = {
         EN_TRANSITO: 'EN TRANSITO',
         EN_RESGUARDO: 'EN RESGUARDO',
-        BAJA_DEFINITIVA: 'BAJA DEFINITIVA',
     };
 
     const validStatusTransitions = {
-        EN_TRANSITO: ['EN_RESGUARDO', 'BAJA_DEFINITIVA'],
-        EN_RESGUARDO: ['BAJA_DEFINITIVA'],
-        BAJA_DEFINITIVA: [],
+        EN_TRANSITO: ['EN_RESGUARDO'],
+        EN_RESGUARDO: [],
     };
 
     const getAvailableStatuses = () => {
@@ -75,10 +73,6 @@ export const StateChangeModal = ({ product, onSubmit, onCancel, isSubmitting = f
             EN_RESGUARDO: {
                 description: 'El producto está bajo resguardo en el almacén',
                 color: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800',
-            },
-            BAJA_DEFINITIVA: {
-                description: 'El producto ha sido dado de baja del sistema',
-                color: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800',
             },
         };
         return info[status] || {};

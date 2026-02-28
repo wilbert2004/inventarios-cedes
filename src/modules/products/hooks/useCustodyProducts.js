@@ -138,13 +138,8 @@ export const useCustodyProducts = () => {
         try {
             setError(null);
 
-            if (newStatus === 'BAJA_DEFINITIVA') {
-                await window.api.custodyLifecycle.deactivate({
-                    productId,
-                    motivo: reasonChange || 'Baja definitiva',
-                    userId: changedBy
-                });
-            } else if (newStatus === 'EN_RESGUARDO' && receptionData.recibido_por_almacen) {
+            // Solo permitir cambio a EN_RESGUARDO
+            if (newStatus === 'EN_RESGUARDO' && receptionData.recibido_por_almacen) {
                 await window.api.custodyLifecycle.registerWarehouseReception({
                     productId,
                     recibido_por_almacen: receptionData.recibido_por_almacen,
@@ -256,27 +251,6 @@ export const useCustodyProducts = () => {
     }, [loadProducts]);
 
     /**
-     * Eliminar (marcar como baja definitiva)
-     */
-    const deleteProduct = useCallback(async (id) => {
-        try {
-            setError(null);
-            await window.api.custodyLifecycle.deactivate({
-                productId: id,
-                motivo: 'Baja definitiva desde módulo de productos'
-            });
-            await loadProducts();
-            await loadStatistics();
-            return { success: true };
-        } catch (err) {
-            const errorMessage = err.message || 'Error al eliminar producto';
-            setError(errorMessage);
-            console.error('Error deleting custody product:', err);
-            return { success: false, error: errorMessage };
-        }
-    }, [loadProducts, loadStatistics]);
-
-    /**
      * Exportar productos
      */
     const exportProducts = useCallback(async () => {
@@ -333,7 +307,6 @@ export const useCustodyProducts = () => {
         searchProducts,
         filterByStatus,
         filterByReason,
-        deleteProduct,
         exportProducts,
     };
 };

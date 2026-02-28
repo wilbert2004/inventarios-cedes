@@ -17,7 +17,6 @@ export default function ProductsView() {
     createProduct,
     updateProduct,
     changeProductStatus,
-    deleteProduct,
     searchProducts,
     filterByStatus,
     filterByReason,
@@ -27,9 +26,7 @@ export default function ProductsView() {
   const [showFormModal, setShowFormModal] = useState(false);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [showStatusModal, setShowStatusModal] = useState(false);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [productToDelete, setProductToDelete] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Estados de notificación
@@ -123,36 +120,6 @@ export default function ProductsView() {
     }
   };
 
-  const handleDeleteProduct = (product) => {
-    setProductToDelete(product);
-    setShowDeleteConfirm(true);
-  };
-
-  const handleConfirmDelete = async () => {
-    if (!productToDelete) {
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const result = await deleteProduct(productToDelete.id);
-      if (result.success) {
-        showNotification('Producto marcado como baja definitiva');
-      } else {
-        showNotification(result.error || 'Error al eliminar el producto', 'error');
-      }
-    } finally {
-      setIsSubmitting(false);
-      setShowDeleteConfirm(false);
-      setProductToDelete(null);
-    }
-  };
-
-  const handleCancelDelete = () => {
-    setShowDeleteConfirm(false);
-    setProductToDelete(null);
-  };
-
   const handleSearch = async (e) => {
     const value = e.target.value;
     setSearchInput(value);
@@ -242,16 +209,16 @@ export default function ProductsView() {
             </div>
 
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">En Resguardo</h3>
-              <p className="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">
-                {statistics.byStatus?.find(s => s.product_status === 'EN_RESGUARDO')?.count || 0}
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">En Tránsito</h3>
+              <p className="text-3xl font-bold text-orange-600 dark:text-orange-400 mt-2">
+                {statistics.byStatus?.find(s => s.product_status === 'EN_TRANSITO')?.count || 0}
               </p>
             </div>
 
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">Bajas Definitivas</h3>
-              <p className="text-3xl font-bold text-red-600 dark:text-red-400 mt-2">
-                {statistics.byStatus?.find(s => s.product_status === 'BAJA_DEFINITIVA')?.count || 0}
+              <h3 className="text-sm font-medium text-gray-600 dark:text-gray-400">En Resguardo</h3>
+              <p className="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">
+                {statistics.byStatus?.find(s => s.product_status === 'EN_RESGUARDO')?.count || 0}
               </p>
             </div>
 
@@ -294,9 +261,6 @@ export default function ProductsView() {
                 <option value="">-- Todos --</option>
                 <option value="EN_TRANSITO">En Tránsito</option>
                 <option value="EN_RESGUARDO">En Resguardo</option>
-                <option value="BAJA_DEFINITIVA">Baja Definitiva</option>
-                <option value="TRASLADO EN PROCESO">Traslado en Proceso</option>
-                <option value="DEVUELTO">Devuelto</option>
               </select>
             </div>
 
@@ -311,7 +275,6 @@ export default function ProductsView() {
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">-- Todos --</option>
-                <option value="BAJA">Baja</option>
                 <option value="RESGUARDO">Resguardo</option>
                 <option value="TRASLADO">Traslado</option>
               </select>
@@ -334,7 +297,6 @@ export default function ProductsView() {
           products={products}
           loading={loading}
           onEdit={handleOpenForm}
-          onDelete={handleDeleteProduct}
           onChangeStatus={handleOpenStatusChange}
           onViewHistory={handleOpenHistory}
         />
@@ -416,40 +378,6 @@ export default function ProductsView() {
                 }}
                 isSubmitting={isSubmitting}
               />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal Confirmación Baja */}
-      {showDeleteConfirm && productToDelete && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full">
-            <div className="p-6">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                Confirmar baja definitiva
-              </h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                ¿Está seguro de que desea marcar este producto como baja definitiva?
-              </p>
-              <div className="flex justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={handleCancelDelete}
-                  className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  disabled={isSubmitting}
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="button"
-                  onClick={handleConfirmDelete}
-                  className="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold"
-                  disabled={isSubmitting}
-                >
-                  Aceptar
-                </button>
-              </div>
             </div>
           </div>
         </div>

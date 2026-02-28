@@ -480,6 +480,25 @@ ipcMain.handle("reports:generatePDF", async (event, reportData, reportType) => {
 
             yPosition += 3;
 
+            // SECCIÓN 1.5: Imagen del Producto (si existe)
+            if (product.product_image) {
+                try {
+                    // Dibujar recuadro para la imagen
+                    doc.setDrawColor(52, 152, 219);
+                    doc.rect(10, yPosition, pageWidth - 20, 50);
+
+                    // Insertar imagen
+                    doc.addImage(product.product_image, 'JPEG', 15, yPosition + 2, 35, 46);
+
+                    yPosition += 52;
+                } catch (err) {
+                    console.log('No se pudo insertar la imagen:', err);
+                    yPosition += 5;
+                }
+            }
+
+            yPosition += 3;
+
             // SECCIÓN 2: Estado y Clasificación
             doc.setFillColor(46, 204, 113); // Verde
             doc.rect(10, yPosition, pageWidth - 20, 7, 'F');
@@ -494,7 +513,8 @@ ipcMain.handle("reports:generatePDF", async (event, reportData, reportType) => {
             const section2Items = [
                 { label: "Estado Actual:", value: product.product_status },
                 { label: "Motivo:", value: product.reason },
-                { label: "Cantidad:", value: product.quantity.toString() }
+                { label: "Cantidad:", value: product.quantity.toString() },
+                { label: "Condición:", value: product.product_condition || 'BUENO' }
             ];
 
             section2Items.forEach((item) => {

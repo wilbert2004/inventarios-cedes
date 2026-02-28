@@ -16,7 +16,7 @@ const SCHEMA_VERSION_TABLE = `
 
 // Versión actual del esquema
 // Incrementar este número cada vez que agregues una nueva migración
-const CURRENT_SCHEMA_VERSION = 9;
+const CURRENT_SCHEMA_VERSION = 10;
 
 /**
  * Inicializar tabla de versiones
@@ -362,6 +362,26 @@ const migrations = [
       `).run();
 
       console.log("✓ Migración 9: Sistema refactorizado a gestión de ciclo de vida completo");
+    },
+  },
+  {
+    version: 10,
+    name: "add_image_and_condition_to_custody_products",
+    up: () => {
+      // Agregar campo de imagen (BLOB para almacenar imagen codificada en base64)
+      if (!columnExists("custody_products", "product_image")) {
+        db.prepare("ALTER TABLE custody_products ADD COLUMN product_image TEXT").run();
+        console.log("✓ Migración 10: Agregado campo product_image a custody_products");
+      }
+
+      // Agregar campo de condición/defecto del producto
+      // Opciones: BUENO, CASILLA_MALA, DEFECTUOSO, etc.
+      if (!columnExists("custody_products", "product_condition")) {
+        db.prepare("ALTER TABLE custody_products ADD COLUMN product_condition TEXT DEFAULT 'BUENO' CHECK(product_condition IN ('BUENO','CASILLA_MALA','DEFECTUOSO'))").run();
+        console.log("✓ Migración 10: Agregado campo product_condition a custody_products");
+      }
+
+      console.log("✓ Migración 10: Agregados campos de imagen y condición del producto");
     },
   },
 ];
