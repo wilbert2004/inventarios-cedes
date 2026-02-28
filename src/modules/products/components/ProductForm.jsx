@@ -26,6 +26,8 @@ export const ProductForm = ({ product = null, onSubmit, onCancel, isSubmitting =
         model: '',
         quantity: 1,
         reason: 'RESGUARDO',
+        product_image: null,
+        product_condition: 'BUENO',
         notes: '',
     }]);
     const [nextProductId, setNextProductId] = useState(2);
@@ -58,6 +60,8 @@ export const ProductForm = ({ product = null, onSubmit, onCancel, isSubmitting =
                 model: product.model || '',
                 quantity: product.quantity || 1,
                 reason: product.reason || 'RESGUARDO',
+                product_image: product.product_image || null,
+                product_condition: product.product_condition || 'BUENO',
                 notes: product.notes || '',
             }]);
             setDeliveryData({
@@ -98,6 +102,19 @@ export const ProductForm = ({ product = null, onSubmit, onCancel, isSubmitting =
         }
     };
 
+    const handleProductImageChange = (productId, file) => {
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const base64Image = e.target.result;
+                setProducts(prev => prev.map(p =>
+                    p.id === productId ? { ...p, product_image: base64Image } : p
+                ));
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
     const addProduct = () => {
         setProducts(prev => [...prev, {
             id: nextProductId,
@@ -108,6 +125,8 @@ export const ProductForm = ({ product = null, onSubmit, onCancel, isSubmitting =
             model: '',
             quantity: 1,
             reason: 'RESGUARDO',
+            product_image: null,
+            product_condition: 'BUENO',
             notes: '',
         }]);
         setNextProductId(prev => prev + 1);
@@ -458,7 +477,7 @@ export const ProductForm = ({ product = null, onSubmit, onCancel, isSubmitting =
                                     )}
                                 </div>
 
-                                {/* Motivo */}
+                                {/* Motivo - Siempre Resguardo */}
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                         Motivo <span className="text-red-500">*</span>
@@ -469,6 +488,57 @@ export const ProductForm = ({ product = null, onSubmit, onCancel, isSubmitting =
                                         disabled
                                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 cursor-not-allowed"
                                     />
+                                </div>
+
+                                {/* Condición del Producto */}
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Condición del Producto <span className="text-red-500">*</span>
+                                    </label>
+                                    <select
+                                        value={product.product_condition}
+                                        onChange={(e) => handleProductChange(product.id, 'product_condition', e.target.value)}
+                                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        required
+                                    >
+                                        <option value="BUENO">Bueno</option>
+                                        <option value="CASILLA_MALA">Casilla Mala</option>
+                                        <option value="DEFECTUOSO">Defectuoso</option>
+                                    </select>
+                                </div>
+
+                                {/* Imagen del Producto */}
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                        Imagen del Producto
+                                    </label>
+                                    <div className="flex flex-col gap-2">
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={(e) => handleProductImageChange(product.id, e.target.files?.[0])}
+                                            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        />
+                                        {product.product_image && (
+                                            <div className="relative">
+                                                <img
+                                                    src={product.product_image}
+                                                    alt="Vista previa del producto"
+                                                    className="max-h-40 rounded-lg border border-gray-300 dark:border-gray-600"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleProductChange(product.id, 'product_image', null)}
+                                                    className="absolute top-1 right-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 transition"
+                                                    title="Eliminar imagen"
+                                                >
+                                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
                                 {/* Notas */}

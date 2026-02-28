@@ -32,7 +32,6 @@ export const ProductHistory = ({ product, onClose }) => {
         const colors = {
             EN_TRANSITO: 'text-orange-600 dark:text-orange-400',
             EN_RESGUARDO: 'text-blue-600 dark:text-blue-400',
-            BAJA_DEFINITIVA: 'text-red-600 dark:text-red-400',
         };
         return colors[status] || 'text-gray-600 dark:text-gray-400';
     };

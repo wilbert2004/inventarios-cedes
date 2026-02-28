@@ -10,10 +10,13 @@ const db = require("../db/connection");
  * Este módulo maneja la custodia, trazabilidad y ciclo de vida de los bienes.
  * Registra todo el ciclo de vida del producto con historial inmutable.
  * 
- * Estados: EN_TRANSITO → EN_RESGUARDO → BAJA_DEFINITIVA
+ * Estados: EN_TRANSITO → EN_RESGUARDO
+ * 
+ * Nota: Los productos siempre se mantienen en resguardo. 
+ * No hay opción de baja definitiva.
  * 
  * Historial inmutable con tipos de eventos:
- * - registro, entrega, recepcion_chofer, recepcion_almacen, cambio_estado, baja, actualizacion
+ * - registro, entrega, recepcion_chofer, recepcion_almacen, cambio_estado, actualizacion
  */
 
 // ========================================
@@ -46,9 +49,8 @@ function registrarEvento(productId, tipoEvento, descripcion, datos = {}) {
  */
 function validarTransicionEstado(estadoActual, nuevoEstado) {
     const transiciones = {
-        'EN_TRANSITO': ['EN_RESGUARDO', 'BAJA_DEFINITIVA'],
-        'EN_RESGUARDO': ['BAJA_DEFINITIVA'],
-        'BAJA_DEFINITIVA': [] // Estado final - no permite cambios
+        'EN_TRANSITO': ['EN_RESGUARDO'],
+        'EN_RESGUARDO': [] // Estado final - no permite cambios
     };
 
     const permitidas = transiciones[estadoActual] || [];
@@ -91,8 +93,8 @@ ipcMain.handle("custodyLifecycle:register", async (event, productData) => {
         INSERT INTO custody_products (
           inventory_number, serial_number, description, brand, model, quantity,
           reason, product_status, reference_folio, center_origin, notes,
-          entregado_por_centro_trabajo, fecha_entrega, registered_by
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          entregado_por_centro_trabajo, fecha_entrega, product_image, product_condition, registered_by
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `);
 
             const info = insert.run(
@@ -109,6 +111,8 @@ ipcMain.handle("custodyLifecycle:register", async (event, productData) => {
                 productData.notes || null,
                 productData.entregado_por_centro_trabajo,
                 productData.fecha_entrega,
+                productData.product_image || null,
+                productData.product_condition || 'BUENO',
                 productData.userId
             );
 
@@ -431,6 +435,14 @@ ipcMain.handle("custodyLifecycle:update", async (event, data) => {
             if (data.reference_folio !== undefined) {
                 updates.push("reference_folio = ?");
                 params.push(data.reference_folio);
+            }
+            if (data.product_image !== undefined) {
+                updates.push("product_image = ?");
+                params.push(data.product_image);
+            }
+            if (data.product_condition !== undefined) {
+                updates.push("product_condition = ?");
+                params.push(data.product_condition);
             }
 
             if (updates.length === 0) {

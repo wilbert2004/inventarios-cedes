@@ -122,6 +122,8 @@ export default function ControlGeneralView() {
                 quantity: selectedProduct.quantity,
                 reason: selectedProduct.reason,
                 product_status: selectedProduct.product_status,
+                product_condition: selectedProduct.product_condition || 'BUENO',
+                product_image: selectedProduct.product_image || null,
                 center_origin: selectedProduct.center_origin,
                 reference_folio: selectedProduct.reference_folio || 'N/A',
                 entregado_por_centro_trabajo: selectedProduct.entregado_por_centro_trabajo || 'N/A',
@@ -548,12 +550,28 @@ export default function ControlGeneralView() {
                                     </div>
                                 </div>
 
+                                {/* Sección 1.5: Imagen del Producto */}
+                                {selectedProduct.product_image && (
+                                    <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                                        <h3 className="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-3 uppercase tracking-wide">
+                                            🖼️ Imagen del Producto
+                                        </h3>
+                                        <div className="flex justify-center">
+                                            <img
+                                                src={selectedProduct.product_image}
+                                                alt="Imagen del producto"
+                                                className="max-h-64 rounded-lg border border-blue-300 dark:border-blue-600 shadow-lg"
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
                                 {/* Sección 2: Estado y Clasificación */}
                                 <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 border border-green-200 dark:border-green-800">
                                     <h3 className="text-sm font-semibold text-green-900 dark:text-green-300 mb-3 uppercase tracking-wide">
                                         ✅ Estado y Clasificación
                                     </h3>
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                         <div>
                                             <span className="text-xs font-medium text-green-700 dark:text-green-400 block mb-1">Estado Actual</span>
                                             <p className="text-gray-900 dark:text-white font-semibold">
@@ -570,6 +588,12 @@ export default function ControlGeneralView() {
                                             <span className="text-xs font-medium text-green-700 dark:text-green-400 block mb-1">Cantidad</span>
                                             <p className="text-gray-900 dark:text-white">
                                                 {selectedProduct.quantity}
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <span className="text-xs font-medium text-green-700 dark:text-green-400 block mb-1">Condición</span>
+                                            <p className="text-gray-900 dark:text-white">
+                                                {selectedProduct.product_condition || 'BUENO'}
                                             </p>
                                         </div>
                                     </div>
