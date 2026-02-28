@@ -1,14 +1,14 @@
 import { useRef, useState, useCallback } from 'react';
-import { ExitForm } from './components/ExitForm';
-import { ExitProductSearch } from './components/ExitProductSearch';
-import { ExitCart } from './components/ExitCart';
-import { ExitSummaryPanel } from './components/ExitSummaryPanel';
-import { useSalesExit } from './hooks/useSalesExit';
+import { CustodyExitForm } from './components/CustodyExitForm';
+import { CustodyProductSearch } from './components/CustodyProductSearch';
+import { CustodyExitCart } from './components/CustodyExitCart';
+import { CustodyExitSummary } from './components/CustodyExitSummary';
+import { useCustodyExit } from './hooks/useCustodyExit';
 import { Toast } from '../../components/Toast';
 
 /**
- * Vista principal para gestión de salidas de bienes
- * Permite registrar extracciones de bienes del inventario
+ * Vista principal para gestión de salidas de bienes en resguardo
+ * Permite registrar salidas definitivas hacia Zona Principal
  */
 export function InventoryExitView() {
     const formRef = useRef(null);
@@ -17,23 +17,21 @@ export function InventoryExitView() {
     const [isProcessing, setIsProcessing] = useState(false);
     const [formData, setFormData] = useState({
         folio: '',
-        reason: '',
         exit_date: new Date().toISOString().split('T')[0],
         description: '',
     });
 
-    // Usar hook de salidas
+    // Usar hook de salidas de resguardo
     const {
-        products,
+        custodyProducts,
         exitCart,
         totals,
-        searchProduct,
+        loading,
         addToExitCart,
-        updateQuantity,
         removeFromCart,
         processExit,
         clearCart,
-    } = useSalesExit();
+    } = useCustodyExit();
 
     /**
      * Mostrar mensaje toast
@@ -45,38 +43,29 @@ export function InventoryExitView() {
     };
 
     /**
-     * Manejar selección de producto en búsqueda
+     * Manejar selección de bien en búsqueda
      */
     const handleProductSelect = useCallback(
         async (product) => {
-            // Validar que el producto tenga stock
-            if (!product.stock || product.stock === 0) {
-                showToast('Este producto no tiene stock disponible', 'error');
-                return;
+            try {
+                // Agregar al carrito (validaciones en el hook)
+                addToExitCart(product);
+                showToast(`${product.inventory_number} agregado al carrito`, 'success');
+            } catch (error) {
+                showToast(error.message || 'Error al agregar bien', 'error');
             }
-
-            // Validar que no esté duplicado en el carrito
-            const alreadyInCart = exitCart.some((item) => item.id === product.id);
-            if (alreadyInCart) {
-                showToast('Este bien ya está en el carrito', 'warning');
-                return;
-            }
-
-            // Agregar al carrito
-            addToExitCart(product, 1);
-            showToast(`${product.name} agregado al carrito`, 'success');
         },
-        [exitCart, addToExitCart]
+        [addToExitCart]
     );
 
     /**
-     * Manejar procesamiento de salida
+     * Manejar procesamiento de salida de resguardo
      */
     const handleProcessExit = useCallback(
-        async (deliveryData) => {
+        async (responsiblesData) => {
             // Validar formulario
             if (!formRef.current || !formRef.current.validate()) {
-                showToast('Por favor completa todos los campos requeridos', 'error');
+                showToast('Por favor completa todos los campos requeridos del documento', 'error');
                 return;
             }
 
@@ -92,100 +81,68 @@ export function InventoryExitView() {
                 // Obtener datos del formulario
                 const exitData = formRef.current.getData();
 
-                // Preparar payload
-                const payload = {
+                // Procesar salida con todos los datos
+                const result = await processExit({
                     ...exitData,
-                    ...deliveryData,
-                    items: exitCart.map((item) => ({
-                        productId: item.id,
-                        quantity: item.quantity,
-                    })),
-                };
-
-                // Procesar la salida
-                const result = await processExit(payload);
+                    ...responsiblesData,
+                });
 
                 if (result.success) {
-                    showToast(
-                        `Salida registrada correctamente. Folio: ${result.folio}`,
-                        'success'
-                    );
+                    showToast(`✅ Salida procesada exitosamente. Folio: ${result.folio}`, 'success');
 
-                    // Limpiar formulario
+                    // Limpiar carrito y formulario completamente
+                    clearCart();
                     setFormData({
                         folio: '',
-                        reason: '',
                         exit_date: new Date().toISOString().split('T')[0],
                         description: '',
                     });
-
-                    if (formRef.current) {
-                        // Reset form
-                        Object.assign(formRef.current.getData(), {
-                            folio: '',
-                            reason: '',
-                            exit_date: new Date().toISOString().split('T')[0],
-                            description: '',
-                        });
-                    }
-
-                    // Limpiar carrito
-                    clearCart();
-
-                    // Recargar productos
-                    setTimeout(() => {
-                        // El hook debería recargar automáticamente
-                    }, 500);
                 } else {
-                    showToast(
-                        result.message || 'Error al procesar la salida',
-                        'error'
-                    );
+                    showToast(result.message || 'Error al procesar salida', 'error');
                 }
-            } catch (error) {
-                console.error('Error procesando salida:', error);
-                showToast(
-                    error.message || 'Error al procesar la salida',
-                    'error'
-                );
+            } catch (err) {
+                const errorMessage = err.message || 'Error al procesar salida';
+                showToast(errorMessage, 'error');
+                console.error('Error processing custody exit:', err);
             } finally {
                 setIsProcessing(false);
             }
         },
-        [exitCart, processExit, clearCart, formRef]
+        [exitCart, processExit]
     );
 
     /**
-     * Manejar cancelación
+     * Cancelar operación
      */
-    const handleCancel = () => {
+    const handleCancel = useCallback(() => {
         if (exitCart.length > 0) {
             const confirmed = window.confirm(
-                '¿Estás seguro de que deseas cancelar? Se perderá todo lo que hayas agregado.'
+                '¿Deseas cancelar? Se perderán los bienes del carrito.'
             );
             if (!confirmed) return;
+            clearCart();
         }
-
-        clearCart();
-        setFormData({
-            folio: '',
-            reason: '',
-            exit_date: new Date().toISOString().split('T')[0],
-            description: '',
-        });
-        showToast('Operación cancelada', 'info');
-    };
+        showToast('Operación cancelada', 'success');
+    }, [exitCart, clearCart]);
 
     return (
         <div className="p-6 bg-gray-100 dark:bg-gray-900 min-h-screen">
-            <div className="max-w-6xl mx-auto">
+            <div className="max-w-7xl mx-auto">
                 {/* Encabezado */}
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                        Salida de Bienes
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
+                        <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                            />
+                        </svg>
+                        Salida de Bienes en Resguardo
                     </h1>
                     <p className="mt-2 text-gray-600 dark:text-gray-400">
-                        Registra extracciones y salidas de bienes del inventario
+                        Registra salida definitiva de bienes hacia <strong>Zona Principal</strong>
                     </p>
                 </div>
 
@@ -193,7 +150,7 @@ export function InventoryExitView() {
                 {toastMessage && (
                     <Toast
                         message={toastMessage}
-                        type={toastType}
+                        variant={toastType}
                         onClose={() => setToastMessage(null)}
                     />
                 )}
@@ -202,33 +159,30 @@ export function InventoryExitView() {
                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                     {/* Columna izquierda: Formulario y búsqueda */}
                     <div className="lg:col-span-2 space-y-6">
-                        {/* Formulario */}
-                        <ExitForm
+                        {/* Formulario de documento */}
+                        <CustodyExitForm
                             ref={formRef}
                             initialData={formData}
                             onDataChange={setFormData}
                         />
 
-                        {/* Búsqueda de productos */}
-                        <ExitProductSearch
-                            products={products}
+                        {/* Búsqueda de bienes en resguardo */}
+                        <CustodyProductSearch
+                            products={custodyProducts}
                             onSelectProduct={handleProductSelect}
-                            isLoading={products.length === 0}
+                            isLoading={loading}
                         />
 
-                        {/* Carrito */}
-                        <ExitCart
+                        {/* Carrito de bienes */}
+                        <CustodyExitCart
                             items={exitCart}
-                            products={products}
-                            onUpdateQuantity={updateQuantity}
                             onRemoveItem={removeFromCart}
-                            isProcessing={isProcessing}
                         />
                     </div>
 
-                    {/* Columna derecha: Resumen */}
-                    <div>
-                        <ExitSummaryPanel
+                    {/* Columna derecha: Resumen y responsables */}
+                    <div className="lg:col-span-1">
+                        <CustodyExitSummary
                             totals={totals}
                             formData={formData}
                             cartItemsCount={exitCart.length}
@@ -240,19 +194,38 @@ export function InventoryExitView() {
                 </div>
 
                 {/* Información de ayuda */}
-                <div className="mt-8 p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20">
-                    <h3 className="font-semibold text-blue-900 dark:text-blue-300">
-                        💡 Consejos para usar esta sección
-                    </h3>
-                    <ul className="mt-2 ml-4 text-sm text-blue-800 dark:text-blue-400 list-disc space-y-1">
-                        <li>Busca bienes por código de barras o nombre</li>
-                        <li>Especifica el motivo de la salida (traslado, devolución, etc.)</li>
-                        <li>El folio debe ser único para cada salida</li>
-                        <li>No puedes extraer más cantidad de la que hay disponible</li>
-                        <li>Completa los datos de entrega y recepción antes de procesar</li>
-                    </ul>
+                <div className="mt-8 p-4 rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800">
+                    <div className="flex items-start gap-3">
+                        <svg
+                            className="w-6 h-6 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                        </svg>
+                        <div className="flex-1">
+                            <h3 className="font-semibold text-amber-900 dark:text-amber-300 mb-2">
+                                💡 Información Importante
+                            </h3>
+                            <ul className="text-sm text-amber-800 dark:text-amber-400 list-disc list-inside space-y-1">
+                                <li>Solo se muestran bienes con estado <strong>EN RESGUARDO</strong></li>
+                                <li>La salida es <strong>definitiva</strong> - El bien no regresa al área original</li>
+                                <li>El destino siempre es <strong>Zona Principal</strong></li>
+                                <li>Se requiere información de los 3 responsables (Entrega, Transporta, Recibe)</li>
+                                <li>El folio puede ser <strong>automático</strong> (SAL-RSG-AÑO-###, consecutivo) o <strong>manual</strong> (debe ser único)</li>
+                                <li>Todos los bienes de una misma salida comparten el mismo folio</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     );
 }
+

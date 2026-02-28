@@ -16,7 +16,7 @@ const SCHEMA_VERSION_TABLE = `
 
 // Versión actual del esquema
 // Incrementar este número cada vez que agregues una nueva migración
-const CURRENT_SCHEMA_VERSION = 10;
+const CURRENT_SCHEMA_VERSION = 12;
 
 /**
  * Inicializar tabla de versiones
@@ -382,6 +382,197 @@ const migrations = [
       }
 
       console.log("✓ Migración 10: Agregados campos de imagen y condición del producto");
+    },
+  },
+  {
+    version: 11,
+    name: "add_custody_exits_tables",
+    up: () => {
+      // 1. Crear tabla custody_exits (Encabezado de salidas)
+      if (!tableExists("custody_exits")) {
+        db.prepare(`
+          CREATE TABLE IF NOT EXISTS custody_exits (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            folio TEXT UNIQUE NOT NULL,
+            exit_date TEXT NOT NULL,
+            description TEXT,
+            destination TEXT DEFAULT 'Zona Principal',
+            
+            -- Responsables (3 niveles)
+            delivered_by TEXT NOT NULL,
+            delivered_by_position TEXT NOT NULL,
+            transported_by TEXT NOT NULL,
+            transported_by_license TEXT NOT NULL,
+            received_by TEXT NOT NULL,
+            received_by_position TEXT NOT NULL,
+            
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+          )
+        `).run();
+        console.log("✓ Migración 11: Creada tabla custody_exits");
+      }
+
+      // 2. Crear tabla custody_exit_items (Detalle de bienes en cada salida)
+      if (!tableExists("custody_exit_items")) {
+        db.prepare(`
+          CREATE TABLE IF NOT EXISTS custody_exit_items (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            custody_exit_id INTEGER NOT NULL,
+            custody_product_id INTEGER NOT NULL,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (custody_exit_id) REFERENCES custody_exits(id),
+            FOREIGN KEY (custody_product_id) REFERENCES custody_products(id)
+          )
+        `).run();
+        console.log("✓ Migración 11: Creada tabla custody_exit_items");
+      }
+
+      // 3. Crear índice en folio de custody_exits
+      if (!indexExists("idx_custody_exits_folio")) {
+        db.prepare(`
+          CREATE INDEX IF NOT EXISTS idx_custody_exits_folio
+          ON custody_exits(folio)
+        `).run();
+        console.log("✓ Migración 11: Creado índice idx_custody_exits_folio");
+      }
+
+      // 4. SQLite no permite modificar CHECK constraints de columnas existentes
+      // Solución: Crear tabla temporal, copiar datos, eliminar table original, renombrar
+      // Esto es necesario para agregar 'TRASLADADO' al constraint de product_status
+
+      // Verificar si necesitamos actualizar el constraint
+      const tableInfo = db.prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='custody_products'").get();
+
+      if (tableInfo && !tableInfo.sql.includes("TRASLADADO")) {
+        console.log("  → Actualizando constraint de product_status para incluir 'TRASLADADO'...");
+
+        // Crear tabla temporal con el nuevo constraint (sin CHECK constraint en product_condition para permitir copia)
+        db.prepare(`
+          CREATE TABLE custody_products_new (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            inventory_number TEXT UNIQUE NOT NULL,
+            serial_number TEXT,
+            description TEXT NOT NULL,
+            brand TEXT,
+            model TEXT,
+            quantity INTEGER NOT NULL DEFAULT 1,
+            reason TEXT CHECK(reason IN ('BAJA','RESGUARDO','TRASLADO')) NOT NULL DEFAULT 'RESGUARDO',
+            product_status TEXT CHECK(product_status IN ('EN_TRANSITO','EN_RESGUARDO','TRASLADADO','BAJA_DEFINITIVA')) NOT NULL DEFAULT 'EN_TRANSITO',
+            reference_folio TEXT,
+            center_origin TEXT,
+            notes TEXT,
+            entregado_por_centro_trabajo TEXT,
+            fecha_entrega TEXT,
+            recibido_por_chofer TEXT,
+            fecha_recepcion_chofer TEXT,
+            recibido_por_almacen TEXT,
+            fecha_recepcion_almacen TEXT,
+            fecha_baja TEXT,
+            motivo_baja TEXT,
+            product_image TEXT,
+            product_condition TEXT DEFAULT 'BUENO',
+            registered_by INTEGER,
+            is_deleted INTEGER DEFAULT 0,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (registered_by) REFERENCES users(id)
+          )
+        `).run();
+
+        // Copiar datos normalizando product_condition
+        db.prepare(`
+          INSERT INTO custody_products_new 
+          SELECT 
+            id, inventory_number, serial_number, description, brand, model, quantity,
+            reason, product_status, reference_folio, center_origin, notes,
+            entregado_por_centro_trabajo, fecha_entrega, 
+            recibido_por_chofer, fecha_recepcion_chofer,
+            recibido_por_almacen, fecha_recepcion_almacen,
+            fecha_baja, motivo_baja, product_image,
+            COALESCE(product_condition, 'BUENO') as product_condition,
+            registered_by, is_deleted, created_at, updated_at
+          FROM custody_products
+        `).run();
+
+        // Eliminar tabla original
+        db.prepare("DROP TABLE custody_products").run();
+
+        // Renombrar tabla nueva
+        db.prepare("ALTER TABLE custody_products_new RENAME TO custody_products").run();
+
+        // Recrear índices
+        db.prepare(`
+          CREATE INDEX IF NOT EXISTS idx_custody_products_inventory
+          ON custody_products(inventory_number)
+        `).run();
+
+        db.prepare(`
+          CREATE INDEX IF NOT EXISTS idx_custody_products_serial
+          ON custody_products(serial_number)
+        `).run();
+
+        db.prepare(`
+          CREATE INDEX IF NOT EXISTS idx_custody_products_status
+          ON custody_products(product_status)
+        `).run();
+
+        console.log("  ✓ Constraint actualizado con estado 'TRASLADADO'");
+      }
+
+      console.log("✓ Migración 11: Sistema de salidas de resguardo implementado");
+    },
+  },
+  // ============================================
+  // MIGRACIÓN 12: Permitir tipo_evento 'salida'
+  // ============================================
+  {
+    version: 12,
+    name: "Add salida event type to custody_product_history",
+    up() {
+      // SQLite no permite modificar CHECK constraints de columnas existentes
+      // Solución: Crear tabla temporal, copiar datos, eliminar table original, renombrar
+
+      console.log("  → Actualizando constraint de tipo_evento para incluir 'salida'...");
+
+      // Crear tabla temporal con el nuevo constraint
+      db.prepare(`
+        CREATE TABLE custody_product_history_new (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          product_id INTEGER NOT NULL,
+          tipo_evento TEXT CHECK(tipo_evento IN ('registro','entrega','recepcion_chofer','recepcion_almacen','cambio_estado','baja','actualizacion','salida')) NOT NULL,
+          descripcion TEXT NOT NULL,
+          previous_status TEXT,
+          new_status TEXT,
+          datos_json TEXT,
+          changed_by INTEGER,
+          created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+          FOREIGN KEY (product_id) REFERENCES custody_products(id),
+          FOREIGN KEY (changed_by) REFERENCES users(id)
+        )
+      `).run();
+
+      // Copiar datos de la tabla original
+      db.prepare(`
+        INSERT INTO custody_product_history_new 
+        SELECT * FROM custody_product_history
+      `).run();
+
+      // Eliminar tabla original
+      db.prepare("DROP TABLE custody_product_history").run();
+
+      // Renombrar tabla nueva
+      db.prepare("ALTER TABLE custody_product_history_new RENAME TO custody_product_history").run();
+
+      // Recrear índice
+      if (!indexExists("idx_custody_product_history_product")) {
+        db.prepare(`
+          CREATE INDEX IF NOT EXISTS idx_custody_product_history_product
+          ON custody_product_history(product_id)
+        `).run();
+      }
+
+      console.log("  ✓ Constraint actualizado: tipo_evento ahora acepta 'salida'");
+      console.log("✓ Migración 12: Soporte para eventos de salida agregado");
     },
   },
 ];

@@ -545,21 +545,13 @@ ipcMain.handle("custodyLifecycle:getHistory", async (event, productId) => {
  */
 ipcMain.handle("custodyLifecycle:getStatistics", async () => {
     try {
-        const stats = {
-            total: 0,
-            enTransito: 0,
-            enResguardo: 0,
-            bajaDefinitiva: 0,
-            porMotivo: {
-                BAJA: 0,
-                RESGUARDO: 0,
-                TRASLADO: 0
-            }
-        };
-
         // Total de productos activos
-        const total = db.prepare("SELECT COUNT(*) as count FROM custody_products WHERE is_deleted = 0").get();
-        stats.total = total.count;
+        const totalRow = db.prepare("SELECT COUNT(*) as count FROM custody_products WHERE is_deleted = 0").get();
+        const totalProducts = totalRow?.count || 0;
+
+        // Cantidad total (considerando descripciones que podrían tener cantidad)
+        const quantityRow = db.prepare("SELECT COALESCE(SUM(quantity), 0) as total FROM custody_products WHERE is_deleted = 0").get();
+        const totalQuantity = quantityRow?.total || 0;
 
         // Por estado
         const byStatus = db.prepare(`
@@ -567,27 +559,28 @@ ipcMain.handle("custodyLifecycle:getStatistics", async () => {
       FROM custody_products 
       WHERE is_deleted = 0
       GROUP BY product_status
-    `).all();
-
-        byStatus.forEach(row => {
-            if (row.product_status === 'EN_TRANSITO') stats.enTransito = row.count;
-            if (row.product_status === 'EN_RESGUARDO') stats.enResguardo = row.count;
-            if (row.product_status === 'BAJA_DEFINITIVA') stats.bajaDefinitiva = row.count;
-        });
+    `).all() || [];
 
         // Por motivo
         const byReason = db.prepare(`
       SELECT reason, COUNT(*) as count 
       FROM custody_products 
-      WHERE is_deleted = 0
+      WHERE is_deleted = 0 AND reason IS NOT NULL
       GROUP BY reason
-    `).all();
+    `).all() || [];
 
-        byReason.forEach(row => {
-            stats.porMotivo[row.reason] = row.count;
-        });
-
-        return stats;
+        return {
+            totalProducts,
+            totalQuantity,
+            byStatus,
+            byReason,
+            // Mantener compatibilidad con antiguos accesos
+            total: totalProducts,
+            enTransito: byStatus.find(s => s.product_status === 'EN_TRANSITO')?.count || 0,
+            enResguardo: byStatus.find(s => s.product_status === 'EN_RESGUARDO')?.count || 0,
+            bajaDefinitiva: byStatus.find(s => s.product_status === 'BAJA_DEFINITIVA')?.count || 0,
+            trasladado: byStatus.find(s => s.product_status === 'TRASLADADO')?.count || 0
+        };
     } catch (error) {
         console.error("Error obteniendo estadísticas:", error);
         throw new Error("Error al obtener estadísticas");

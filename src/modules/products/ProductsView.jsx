@@ -19,7 +19,6 @@ export default function ProductsView() {
     changeProductStatus,
     searchProducts,
     filterByStatus,
-    filterByReason,
   } = useCustodyProducts();
 
   // Estados del modal
@@ -36,7 +35,6 @@ export default function ProductsView() {
   // Filtros
   const [searchInput, setSearchInput] = useState('');
   const [statusFilter, setStatusFilterLocal] = useState('');
-  const [reasonFilterLocal, setReasonFilterLocal] = useState('');
 
   const showNotification = (message, type = 'success') => {
     if (type === 'success') {
@@ -139,22 +137,11 @@ export default function ProductsView() {
       await filterByStatus(value);
     } else {
       setSearchInput('');
-      setReasonFilterLocal('');
       await searchProducts(''); // Recargar todos los productos
     }
   };
 
-  const handleReasonFilterChange = async (e) => {
-    const value = e.target.value;
-    setReasonFilterLocal(value);
-    if (value) {
-      await filterByReason(value);
-    } else {
-      setSearchInput('');
-      setStatusFilterLocal('');
-      await searchProducts(''); // Recargar todos los productos
-    }
-  };
+
 
   return (
     <div className="w-full min-h-screen p-4 bg-gray-50 dark:bg-gray-900">
@@ -233,7 +220,7 @@ export default function ProductsView() {
 
         {/* Controles de búsqueda y filtros */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Búsqueda */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -261,22 +248,6 @@ export default function ProductsView() {
                 <option value="">-- Todos --</option>
                 <option value="EN_TRANSITO">En Tránsito</option>
                 <option value="EN_RESGUARDO">En Resguardo</option>
-              </select>
-            </div>
-
-            {/* Filtro por Motivo */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Motivo
-              </label>
-              <select
-                value={reasonFilterLocal}
-                onChange={handleReasonFilterChange}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">-- Todos --</option>
-                <option value="RESGUARDO">Resguardo</option>
-                <option value="TRASLADO">Traslado</option>
               </select>
             </div>
 

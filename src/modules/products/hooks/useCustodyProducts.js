@@ -36,9 +36,17 @@ export const useCustodyProducts = () => {
     const loadStatistics = useCallback(async () => {
         try {
             const stats = await window.api.custodyLifecycle.getStatistics();
+            console.log("Statistics loaded:", stats);
             setStatistics(stats);
         } catch (err) {
             console.error('Error loading statistics:', err);
+            // Mantener estadísticas vacías pero válidas
+            setStatistics({
+                totalProducts: 0,
+                totalQuantity: 0,
+                byStatus: [],
+                byReason: []
+            });
         }
     }, []);
 

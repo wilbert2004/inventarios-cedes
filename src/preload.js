@@ -100,6 +100,14 @@ contextBridge.exposeInMainWorld("api", {
     deleteCustodyEntry: (entryId) => ipcRenderer.invoke("custody:deleteCustodyEntry", entryId),
   },
 
+  custodyExit: {
+    process: (exitData) => ipcRenderer.invoke("custodyExit:process", exitData),
+    getAll: () => ipcRenderer.invoke("custodyExit:getAll"),
+    getById: (exitId) => ipcRenderer.invoke("custodyExit:getById", exitId),
+    checkFolioExists: (folio) => ipcRenderer.invoke("custodyExit:checkFolioExists", folio),
+    generateFolio: () => ipcRenderer.invoke("custodyExit:generateFolio"),
+  },
+
   custodyProducts: {
     create: (product) => ipcRenderer.invoke("custodyProducts:create", product),
     getAll: () => ipcRenderer.invoke("custodyProducts:getAll"),
