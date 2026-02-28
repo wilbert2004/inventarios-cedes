@@ -1,56 +1,79 @@
-# 🛒 Absolute POS App
+# 🏢 Sistema de Gestión de Bienes – Sede Valladolid
 
-Sistema de Punto de Venta (POS) completo desarrollado con Electron, React y SQLite.
+Sistema integral de **control patrimonial y resguardo de bienes** desarrollado con Electron, React y SQLite.
+
+Aplicación de escritorio diseñada para gestionar el registro, resguardo, procesos internos y salidas oficiales de bienes institucionales.
+
+---
 
 ## 📋 Características
 
-- ✅ **Punto de Venta**: Interfaz rápida para realizar ventas con búsqueda por código de barras
-- ✅ **Gestión de Productos**: CRUD completo con búsqueda, filtrado y códigos de barras
-- ✅ **Inventario**: Control de stock en tiempo real
-- ✅ **Base de datos local**: SQLite embebida (sin servidor externo)
-- ✅ **Interfaz moderna**: Diseño responsivo con Tailwind CSS
-- ✅ **Desktop App**: Multiplataforma (Windows, macOS, Linux)
+* ✅ **Registro de Bienes**: Alta de bienes con número de inventario, serie, marca, modelo y condición
+* ✅ **Gestión de Resguardo**: Asignación de bienes a áreas o departamentos
+* ✅ **Control de Procesos**: Mantenimiento, reasignación, reporte de daño y baja
+* ✅ **Control de Salidas**: Registro de salidas temporales o definitivas
+* ✅ **Historial de Movimientos**: Trazabilidad completa de cada bien
+* ✅ **Base de datos local**: SQLite embebida (sin servidor externo)
+* ✅ **Interfaz moderna**: Diseño responsivo con Tailwind CSS
+* ✅ **Desktop App**: Multiplataforma (Windows, macOS, Linux)
+
+---
 
 ## 🚀 Instalación y Configuración
 
 ### Requisitos Previos
 
-- **Node.js** v18 o superior ([Descargar](https://nodejs.org/))
-- **npm** v9 o superior (viene con Node.js)
-- **Git** (opcional, para clonar el repositorio)
+* **Node.js** v18 o superior ([Descargar](https://nodejs.org/))
+* **npm** v9 o superior
+* **Git** (opcional)
+
+---
 
 ### Pasos de Instalación
 
-1. **Clonar el repositorio** (o descargar el ZIP):
+1. **Clonar el repositorio**:
+
 ```bash
 git clone <url-del-repo>
-cd absolute-pos-app
+cd gestion-bienes-valladolid
 ```
 
 2. **Instalar dependencias**:
+
 ```bash
 npm install
 ```
 
-> ⚠️ **Importante**: El comando `npm install` automáticamente:
-> - Instalará todas las dependencias de Node.js
-> - Ejecutará `electron-rebuild` para compilar módulos nativos (`better-sqlite3`)
-> - Esto puede tardar 2-3 minutos la primera vez
+> ⚠️ El comando `npm install` automáticamente:
+>
+> * Instala todas las dependencias
+> * Ejecuta `electron-rebuild` para compilar módulos nativos (`better-sqlite3`)
+> * Puede tardar 2-3 minutos la primera vez
 
 3. **Iniciar la aplicación**:
+
 ```bash
 npm start
 ```
 
-¡Eso es todo! La aplicación se abrirá automáticamente y la base de datos SQLite se creará en la primera ejecución.
+La base de datos se creará automáticamente en la primera ejecución.
+
+---
 
 ## 📁 Ubicación de la Base de Datos
 
 La base de datos SQLite se crea automáticamente en:
 
-- **Windows**: `C:\Users\<usuario>\AppData\Roaming\absolute-pos-app\pos.db`
-- **macOS**: `~/Library/Application Support/absolute-pos-app/pos.db`
-- **Linux**: `~/.config/absolute-pos-app/pos.db`
+* **Windows**:
+  `C:\Users\<usuario>\AppData\Roaming\gestion-bienes-valladolid\bienes.db`
+
+* **macOS**:
+  `~/Library/Application Support/gestion-bienes-valladolid/bienes.db`
+
+* **Linux**:
+  `~/.config/gestion-bienes-valladolid/bienes.db`
+
+---
 
 ## 🛠️ Scripts Disponibles
 
@@ -58,176 +81,175 @@ La base de datos SQLite se crea automáticamente en:
 # Iniciar en modo desarrollo
 npm start
 
-# Empaquetar la aplicación para distribución
+# Empaquetar la aplicación
 npm run package
 
-# Crear instaladores para la plataforma actual
+# Crear instaladores
 npm run make
 
-# Reconstruir módulos nativos manualmente (si hay problemas)
+# Reconstruir módulos nativos
 npx electron-rebuild
 ```
+
+---
 
 ## 📦 Tecnologías Utilizadas
 
 ### Frontend
-- **React 19** - Framework UI
-- **React Router v7** - Navegación
-- **Tailwind CSS v3** - Estilos
+
+* **React 19**
+* **React Router v7**
+* **Tailwind CSS v3**
 
 ### Backend
-- **Electron 39** - Framework desktop
-- **better-sqlite3** - Base de datos SQLite
-- **Node.js** - Runtime
+
+* **Electron 39**
+* **better-sqlite3**
+* **Node.js**
 
 ### Build Tools
-- **Webpack 5** - Empaquetador
-- **Babel** - Transpilador
-- **Electron Forge** - Builder y packager
+
+* **Webpack 5**
+* **Babel**
+* **Electron Forge**
+
+---
 
 ## 🏗️ Estructura del Proyecto
 
 ```
-absolute-pos-app/
+gestion-bienes-valladolid/
 ├── src/
-│   ├── components/           # Componentes compartidos
-│   │   └── Layout.jsx       # Layout principal con sidebar
-│   ├── modules/             # Módulos de la aplicación
-│   │   ├── auth/           # Autenticación
-│   │   ├── sales/          # Punto de venta
-│   │   └── products/       # Gestión de productos
-│   │       ├── components/ # Componentes del módulo
-│   │       ├── hooks/      # Custom hooks
-│   │       └── ProductsView.jsx
-│   ├── main/                # Proceso principal de Electron
-│   │   ├── db/             # Base de datos
+│   ├── components/            # Componentes compartidos
+│   │   └── Layout.jsx
+│   ├── modules/
+│   │   ├── auth/              # Autenticación (pendiente mejora)
+│   │   ├── bienes/            # Registro de bienes
+│   │   ├── movimientos/       # Procesos y cambios de estado
+│   │   ├── salidas/           # Control de salidas
+│   │   └── recepcion/         # Registro de entrega y recepción
+│   ├── main/
+│   │   ├── db/
 │   │   │   ├── connection.js
 │   │   │   ├── migrations.js
 │   │   │   └── tables.js
-│   │   └── ipc/            # Handlers IPC
-│   │       ├── products.ipc.js
-│   │       └── sales.ipc.js
-│   ├── app.jsx             # Configuración de rutas
-│   ├── main.js             # Entrada del proceso principal
-│   ├── preload.js          # Script preload (Bridge)
-│   ├── renderer.js         # Entrada del proceso renderer
-│   └── index.css           # Estilos globales
-├── webpack.*.config.js      # Configuración de Webpack
-├── tailwind.config.js       # Configuración de Tailwind
-├── postcss.config.js        # Configuración de PostCSS
+│   │   └── ipc/
+│   │       ├── bienes.ipc.js
+│   │       ├── movimientos.ipc.js
+│   │       └── salidas.ipc.js
+│   ├── app.jsx
+│   ├── main.js
+│   ├── preload.js
+│   ├── renderer.js
+│   └── index.css
+├── webpack.*.config.js
+├── tailwind.config.js
+├── postcss.config.js
 └── package.json
 ```
+
+---
+
+## 🔄 Flujo Operativo del Sistema
+
+1. Registro del bien
+2. Asignación de número de inventario
+3. Resguardo por área o departamento
+4. Movimiento interno (si aplica)
+5. Registro de salida (temporal o definitiva)
+6. Retorno o baja del sistema
+
+Cada acción queda registrada en el historial del bien.
+
+---
 
 ## 🔧 Solución de Problemas
 
 ### Error: "Cannot find module better-sqlite3"
 
-Si obtienes este error después de `npm install`:
+```bash
+npx electron-rebuild
+```
+
+Si persiste:
 
 ```bash
-# Reconstruir módulos nativos manualmente
-npx electron-rebuild
-
-# Si persiste, reinstalar better-sqlite3
 npm uninstall better-sqlite3
 npm install better-sqlite3
 npx electron-rebuild
 ```
 
-### Error: "EPERM: operation not permitted"
-
-En Windows, algunos antivirus bloquean la instalación. Soluciones:
-
-1. Ejecutar la terminal como **Administrador**
-2. Agregar la carpeta del proyecto a exclusiones del antivirus
-3. Cerrar el editor de código antes de instalar
-
-### La aplicación no inicia
-
-1. Verificar que Node.js está instalado:
-```bash
-node --version  # Debe ser v18+
-npm --version   # Debe ser v9+
-```
-
-2. Limpiar caché y reinstalar:
-```bash
-rm -rf node_modules package-lock.json
-npm install
-```
-
-3. Verificar logs en la consola al ejecutar `npm start`
+---
 
 ### Base de datos corrupta
 
-Si la base de datos presenta problemas:
-
 1. Cerrar la aplicación
-2. Eliminar el archivo `pos.db` de la ubicación mencionada arriba
-3. Reiniciar la aplicación (se creará una nueva base de datos limpia)
+2. Eliminar el archivo `bienes.db`
+3. Reiniciar la aplicación
+
+---
 
 ## 👥 Credenciales de Acceso
 
-Por defecto, la aplicación acepta **cualquier usuario y contraseña** en el login (autenticación pendiente de implementar).
+Actualmente la autenticación es básica (en desarrollo).
 
-Para producción, se recomienda implementar autenticación real con:
-- Hash de contraseñas (bcrypt)
-- Tokens de sesión
-- Validación en el backend
+Para entorno productivo se recomienda:
+
+* Implementar autenticación con bcrypt
+* Control de roles:
+
+  * Administrador
+  * Almacén
+  * Dirección
+* Bitácora de auditoría
+
+---
 
 ## 🚢 Distribución
 
-### Crear instalador para Windows:
+### Crear instalador:
 
 ```bash
 npm run make
 ```
 
-El instalador se generará en `out/make/`.
+Se generará en:
 
-### Empaquetar sin instalador:
-
-```bash
-npm run package
 ```
-
-La aplicación empaquetada estará en `out/absolute-pos-app-win32-x64/`.
-
-## 📝 Notas Importantes
-
-1. **Primera ejecución**: La primera vez que se ejecuta `npm install` puede tardar más debido a la compilación de módulos nativos.
-
-2. **Base de datos**: Se crea automáticamente en el primer inicio. No es necesario configurar nada.
-
-3. **Desarrollo**: Los cambios en el código se reflejan automáticamente con Hot Reload (excepto el proceso principal de Electron).
-
-4. **Migraciones**: Si actualizas el proyecto y ya tienes datos, revisa [MIGRATION.md](MIGRATION.md) para información sobre cambios en la base de datos.
-
-5. **Producción**: Para producción, se recomienda:
-   - Implementar autenticación real
-   - Agregar respaldos automáticos de la base de datos
-   - Implementar logging de errores
-   - Configurar actualizaciones automáticas
-
-## 🤝 Contribución
-
-Si deseas contribuir al proyecto:
-
-1. Fork el repositorio
-2. Crea una rama para tu feature (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add: amazing feature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
-## 📄 Licencia
-
-Este proyecto está bajo la Licencia MIT - ver el archivo LICENSE para más detalles.
-
-## 📧 Contacto
-
-Eduardo Baas Kauil - eduardo.baas@emtech.digital
+out/make/
+```
 
 ---
 
-⭐ Si este proyecto te fue útil, considera darle una estrella en GitHub!
+## 📝 Notas Importantes
 
+1. La base de datos es local y se crea automáticamente.
+2. El sistema está adaptado desde una arquitectura POS hacia control patrimonial.
+3. Ideal para uso interno en sedes institucionales.
+4. Puede ampliarse para conexión en red o respaldo automático.
+
+---
+
+## 🎯 Objetivo del Proyecto
+
+Desarrollar una solución local de control patrimonial que permita:
+
+* Organización eficiente de bienes
+* Trazabilidad completa
+* Reducción de pérdidas
+* Digitalización del resguardo
+* Mejor control administrativo
+
+---
+
+## 📄 Licencia
+
+Proyecto desarrollado con fines académicos y administrativos.
+
+---
+
+📧 Contacto
+
+Wilbert Oliver Chan-l22070034@valladolid.tecnm.mx
+
+⭐ Si este proyecto te fue útil, considera darle una estrella en GitHub.
